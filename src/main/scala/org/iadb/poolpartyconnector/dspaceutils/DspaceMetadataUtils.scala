@@ -7,7 +7,7 @@ import org.iadb.poolpartyconnector.utils.JsonUtils.{FreeTerm, Concept, ConceptRe
 /**
  * Created by Daniel Maatari Okouya on 6/6/15.
  */
-object RecommendedMetadataUtils {
+object DspaceMetadataUtils {
 
 
   /**
@@ -15,12 +15,12 @@ object RecommendedMetadataUtils {
    * Take an Item and a List of recommended metadata and returned the item updated with this metadata
    *
    * @param itemWrapper
-   * @param recommendedmetadata
+   * @param poolpartyconceptresult
    * @return
    */
-  def deliverItemWithRecommendedMetadata(itemWrapper : DspaceItemWrapper, recommendedmetadata: ConceptResults): Item = {
+  def addthesaurusConceptsAsItemMetadata(itemWrapper : DspaceItemWrapper, poolpartyconceptresult: ConceptResults): Item = {
 
-    recommendedmetadata.document foreach { doc =>
+    poolpartyconceptresult.document foreach { doc =>
       doc.concepts foreach { conceptList =>
         conceptList foreach { concept =>
           val dsmetadata = getConceptInDspaceScheme(concept, Choices.CF_UNCERTAIN)
