@@ -1,4 +1,4 @@
-package org.iadb.poolpartyconnector.contentclassification
+package org.iadb.poolpartyconnector.conceptsrecommendation
 
 import akka.actor.ActorSystem
 import org.scalatest.{BeforeAndAfterAll, Suite}

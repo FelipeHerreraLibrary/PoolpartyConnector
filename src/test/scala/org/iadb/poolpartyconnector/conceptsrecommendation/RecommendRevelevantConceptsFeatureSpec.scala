@@ -1,4 +1,4 @@
-package org.iadb.poolpartyconnector.contentclassification
+package org.iadb.poolpartyconnector.conceptsrecommendation
 
 import java.io.File
 import java.nio.file.Files

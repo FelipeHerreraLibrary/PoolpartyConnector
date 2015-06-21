@@ -1,4 +1,4 @@
-package org.iadb.poolpartyconnector.contentclassification
+package org.iadb.poolpartyconnector.conceptsrecommendation
 
 
 import org.iadb.poolpartyconnector.poolpartyjsonprotocol.PoolPartyJsonProtocolSpecification
