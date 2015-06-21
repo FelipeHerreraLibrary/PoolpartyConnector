@@ -8,7 +8,7 @@ package org.iadb.poolpartyconnector.dspaceutils
  * A Utility class to convert between Dspace MetaDatum and SKOS Scheme model of representation
  */
 
-object SchemeUtil {
+object DspaceMetaDatumToSchemeUtil {
 
 
   /**
