@@ -3,7 +3,6 @@ package org.iadb.poolpartyconnector.contentclassification
 import java.io.File
 import java.nio.file.Files
 
-import org.iadb.poolpartyconnector.contentclassification.{PoolPartyClassificationService, ClassificationService}
 import org.scalatest.{FeatureSpec, Matchers, GivenWhenThen}
 
 /**
