@@ -14,7 +14,8 @@ class SchemeCacheExistenceCheckUnitTest extends FunSpec with GivenWhenThen with 
   describe("The Thesaurus Cache Service: ThesaurusCacheService") {
 
 
-    val cache: ThesaurusCacheService = new ThesaurusCacheServicePoolPartyImpl
+
+    val cache: ThesaurusCacheService = ThesaurusCacheServiceModule.service
 
     it("should return false when ask if None Scheme is being Cached") {
 
