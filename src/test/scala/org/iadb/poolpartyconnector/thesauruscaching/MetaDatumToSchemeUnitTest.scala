@@ -1,6 +1,6 @@
 package org.iadb.poolpartyconnector.thesauruscaching
 
-import org.iadb.poolpartyconnector.dspaceutils.SchemeUtil
+import org.iadb.poolpartyconnector.dspaceutils.DspaceMetaDatumToSchemeUtil
 import org.scalatest.{Matchers, GivenWhenThen, FunSpec}
 
 import scala.None
@@ -23,7 +23,7 @@ class MetaDatumToSchemeUnitTest extends FunSpec with GivenWhenThen with Matchers
 
       When("passed to the findScheme operation")
 
-        val res = SchemeUtil.asScheme(metadatum)
+        val res = DspaceMetaDatumToSchemeUtil.asScheme(metadatum)
 
       Then("the result shall be none")
 
@@ -39,7 +39,7 @@ class MetaDatumToSchemeUnitTest extends FunSpec with GivenWhenThen with Matchers
 
       When("the metadatadum is passed to the SchemeUtil asScheme operation")
 
-        val res = SchemeUtil.asScheme(metadatum)
+        val res = DspaceMetaDatumToSchemeUtil.asScheme(metadatum)
 
       Then("the result shall be none")
 
@@ -55,7 +55,7 @@ class MetaDatumToSchemeUnitTest extends FunSpec with GivenWhenThen with Matchers
 
       When("the metadatadum is passed to the SchemeUtil asScheme operation")
 
-        val res = SchemeUtil.asScheme(metadatum)
+        val res = DspaceMetaDatumToSchemeUtil.asScheme(metadatum)
 
       Then("the result shall be none")
 
@@ -72,7 +72,7 @@ class MetaDatumToSchemeUnitTest extends FunSpec with GivenWhenThen with Matchers
 
       When("the metadatadum is passed to the SchemeUtil asScheme operation")
 
-        val res = SchemeUtil.asScheme(metadatum)
+        val res = DspaceMetaDatumToSchemeUtil.asScheme(metadatum)
 
       Then("the result shall be \"http://thesaurus.iadb.org/publicthesauri/IdBAuthors\"")
 
@@ -90,7 +90,7 @@ class MetaDatumToSchemeUnitTest extends FunSpec with GivenWhenThen with Matchers
 
       When("the metadatadum is passed to the SchemeUtil asScheme operation")
 
-        val res = SchemeUtil.asScheme(metadatum)
+        val res = DspaceMetaDatumToSchemeUtil.asScheme(metadatum)
 
       Then("the result shall be \"http://thesaurus.iadb.org/publicthesauri/IdBInstitutions\"")
 
@@ -108,7 +108,7 @@ class MetaDatumToSchemeUnitTest extends FunSpec with GivenWhenThen with Matchers
 
       When("the metadatadum is passed to the SchemeUtil asScheme operation")
 
-        val res = SchemeUtil.asScheme(metadatum)
+        val res = DspaceMetaDatumToSchemeUtil.asScheme(metadatum)
 
       Then("the result shall be \"http://thesaurus.iadb.org/publicthesauri/IdBCountries\"")
 
@@ -125,7 +125,7 @@ class MetaDatumToSchemeUnitTest extends FunSpec with GivenWhenThen with Matchers
 
       When("the metadatadum is passed to the SchemeUtil asScheme operation")
 
-        val res = SchemeUtil.asScheme(metadatum)
+        val res = DspaceMetaDatumToSchemeUtil.asScheme(metadatum)
 
       Then("the result shall be \"http://thesaurus.iadb.org/publicthesauri/IdBDepartments\"")
 
