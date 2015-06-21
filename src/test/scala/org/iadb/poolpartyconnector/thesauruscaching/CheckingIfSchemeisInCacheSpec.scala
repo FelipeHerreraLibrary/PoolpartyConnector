@@ -1,21 +1,23 @@
 package org.iadb.poolpartyconnector.thesauruscaching
 
-import org.scalatest.{FunSpec, Matchers, GivenWhenThen, FeatureSpec}
+import org.scalatest._
 
 /**
  * Created by Daniel Maatari Okouya on 6/19/15.
  */
-class CheckingIfSchemeisInCacheSpec extends FunSpec with GivenWhenThen with Matchers {
+class CheckingIfSchemeisInCacheSpec extends FunSpec with GivenWhenThen with Matchers with ThesaurusCacheServiceFixture {
+
+
 
 
   info("As the System I want to be able to check if a particular scheme exist in the cache")
 
 
+
   describe("The Thesaurus Cache Service: ThesaurusCacheService") {
 
 
-
-    val cache: ThesaurusCacheService = ThesaurusCacheServiceModule.service
+    val cacheService = cache
 
     it("should return false when ask if None Scheme is being Cached") {
 
@@ -25,7 +27,7 @@ class CheckingIfSchemeisInCacheSpec extends FunSpec with GivenWhenThen with Matc
 
       When("checked against the ThesaurusCacheService")
 
-        val res = cache.isSchemeInCache(scheme)
+        val res = cacheService.isSchemeInCache(scheme)
 
       Then("it should respond false")
 
@@ -44,7 +46,7 @@ class CheckingIfSchemeisInCacheSpec extends FunSpec with GivenWhenThen with Matc
 
       When("checked against the ThesaurusCacheService")
 
-        val res = cache.isSchemeInCache(scheme)
+        val res = cacheService.isSchemeInCache(scheme)
 
       Then("it should responds false")
 
@@ -60,7 +62,7 @@ class CheckingIfSchemeisInCacheSpec extends FunSpec with GivenWhenThen with Matc
 
       When("checked against the ThesaurusCacheService")
 
-        val res = cache.isSchemeInCache(scheme)
+        val res = cacheService.isSchemeInCache(scheme)
 
       Then("it should responds false")
 
@@ -78,7 +80,7 @@ class CheckingIfSchemeisInCacheSpec extends FunSpec with GivenWhenThen with Matc
 
         When("checked against the ThesaurusCacheService")
 
-      val res = cache.isSchemeInCache(scheme)
+      val res = cacheService.isSchemeInCache(scheme)
 
         Then("it should responds true")
 
@@ -95,7 +97,7 @@ class CheckingIfSchemeisInCacheSpec extends FunSpec with GivenWhenThen with Matc
 
       When("checked against the ThesaurusCacheService")
 
-        val res = cache.isSchemeInCache(scheme)
+        val res = cacheService.isSchemeInCache(scheme)
 
       Then("it should responds true")
 
@@ -112,7 +114,7 @@ class CheckingIfSchemeisInCacheSpec extends FunSpec with GivenWhenThen with Matc
 
       When("checked against the ThesaurusCacheService")
 
-        val res = cache.isSchemeInCache(scheme)
+        val res = cacheService.isSchemeInCache(scheme)
 
       Then("it should responds true")
 
@@ -129,7 +131,7 @@ class CheckingIfSchemeisInCacheSpec extends FunSpec with GivenWhenThen with Matc
 
       When("checked against the ThesaurusCacheService")
 
-        val res = cache.isSchemeInCache(scheme)
+        val res = cacheService.isSchemeInCache(scheme)
 
       Then("it should responds true")
 
