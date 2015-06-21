@@ -2,8 +2,8 @@ package org.iadb.poolpartyconnector.dspaceutils
 
 import org.dspace.content.Item
 import org.dspace.content.authority.Choices
-import org.iadb.poolpartyconnector.poolpartyjsonprotocol.PoolPartyJsonProtocol
-import PoolPartyJsonProtocol.{FreeTerm, Concept, ConceptResults}
+import org.iadb.poolpartyconnector.poolpartyjsonprotocol.PoolPartyJsonProtocolSpecification
+import PoolPartyJsonProtocolSpecification.{FreeTerm, Concept, ConceptResults}
 
 /**
  * Created by Daniel Maatari Okouya on 6/6/15.

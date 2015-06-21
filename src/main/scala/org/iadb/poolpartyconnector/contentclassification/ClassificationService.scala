@@ -1,23 +1,18 @@
 package org.iadb.poolpartyconnector.contentclassification
 
-import java.io.InputStream
 
-import org.iadb.poolpartyconnector.dspaceutils.ActorSystemSpringWrapperBean
-import org.iadb.poolpartyconnector.poolpartyjsonprotocol.PoolPartyJsonProtocol
-import PoolPartyJsonProtocol.ConceptResults
-import org.iadb.poolpartyconnector.utils.TemporaryCopyUtils
-import java.io.{InputStream, File}
-import java.nio.file.{StandardCopyOption, Files}
+import org.iadb.poolpartyconnector.poolpartyjsonprotocol.PoolPartyJsonProtocolSpecification
+import PoolPartyJsonProtocolSpecification.ConceptResults
+import java.io.{InputStream}
 
-import akka.actor.{PoisonPill, ActorSystem}
-import akka.io.IO
+import akka.actor.ActorSystem
+
 import akka.util.Timeout
 import org.iadb.poolpartyconnector.dspaceutils.ActorSystemSpringWrapperBean
-import PoolPartyJsonProtocol._
-import PoolPartyJsonProtocol.PoolPartyJsonProtocol._
+
+import PoolPartyJsonProtocolSpecification.PoolPartyJsonProtocol._
 
 import org.iadb.poolpartyconnector.utils.TemporaryCopyUtils
-import spray.can.Http
 import spray.client.pipelining._
 import spray.http._
 

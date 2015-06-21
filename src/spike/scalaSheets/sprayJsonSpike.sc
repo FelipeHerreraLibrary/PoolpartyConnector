@@ -1,8 +1,11 @@
 
-import org.iadb.poolpartyconnector.contentclassification._
-import org.iadb.poolpartyconnector.utils.JsonUtils.{Concept, ConceptScheme, PoolPartyJsonProtocol}
+import org.iadb.poolpartyconnector.poolpartyjsonprotocol.PoolPartyJsonProtocolSpecification._
 
-import PoolPartyJsonProtocol._
+import org.iadb.poolpartyconnector.poolpartyjsonprotocol.PoolPartyJsonProtocolSpecification.PoolPartyJsonProtocol._
+
+
+
+
 
 import spray.json._
 

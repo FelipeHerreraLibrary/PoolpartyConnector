@@ -7,7 +7,7 @@ import spray.json.DefaultJsonProtocol
  *
  * The Spray Json Protocol for PoolParty
  */
-object PoolPartyJsonProtocol {
+object PoolPartyJsonProtocolSpecification {
 
 
 
