@@ -8,7 +8,7 @@ import org.scalatest.{FeatureSpec, Matchers, GivenWhenThen}
 /**
  *  Created by Daniel Maatari Okouya on 6/2/15.
  */
-class ClassifyContentFeatureSpecification extends FeatureSpec with Matchers with GivenWhenThen with TestActorSystemFixture {
+class RecommendRevelevantConceptsFeatureSpec extends FeatureSpec with Matchers with GivenWhenThen with TestActorSystemFixture {
 
 
 
@@ -24,7 +24,7 @@ class ClassifyContentFeatureSpecification extends FeatureSpec with Matchers with
 
         val in = Files.newInputStream(new File(getClass.getResource("/UNWOMEN_surveyreport_ADVANCE_16Oct-short.pdf").toURI).toPath)
 
-        val classificationService = new ContentClassificationServicePoolPartyImpl("PoolParty Classification Service", system)
+        val classificationService = new RelevantConceptsRecommendationServicePoolPartyImpl("PoolParty Classification Service", system)
 
 
       When("the content is submitted to the classification service for metadata recommendation")

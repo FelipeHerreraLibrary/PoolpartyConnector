@@ -8,7 +8,7 @@ import scala.None
 /**
  * Created by Daniel Maatari Okouya on 6/19/15.
  */
-class MetaDatumToSchemeUnitTest extends FunSpec with GivenWhenThen with Matchers {
+class MetaDatumToSchemeSpec extends FunSpec with GivenWhenThen with Matchers {
 
 
   info("As the system I want to get the scheme that corresponds to a Dspace Metadatum if it exists or None otherwise")

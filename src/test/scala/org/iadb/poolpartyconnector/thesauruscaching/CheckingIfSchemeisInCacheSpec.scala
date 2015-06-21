@@ -5,7 +5,7 @@ import org.scalatest.{FunSpec, Matchers, GivenWhenThen, FeatureSpec}
 /**
  * Created by Daniel Maatari Okouya on 6/19/15.
  */
-class SchemeCacheExistenceCheckUnitTest extends FunSpec with GivenWhenThen with Matchers {
+class CheckingIfSchemeisInCacheSpec extends FunSpec with GivenWhenThen with Matchers {
 
 
   info("As the System I want to be able to check if a particular scheme exist in the cache")

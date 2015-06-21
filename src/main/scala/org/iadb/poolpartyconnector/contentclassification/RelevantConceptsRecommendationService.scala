@@ -28,7 +28,7 @@ import spray.json._
 /**
  * Created by Daniel Maatari Okouya on 6/6/15.
  */
-trait ContentClassificationService {
+trait RelevantConceptsRecommendationService {
 
   def recommendMetadata(inputstream: InputStream) : ConceptResults
 
@@ -39,7 +39,7 @@ trait ContentClassificationService {
  * Created by Daniel Maatari Okouya on 6/2/15.
  */
 
-case class ContentClassificationServicePoolPartyImpl(name: String, actorSystem: ActorSystem) extends ContentClassificationService {
+case class RelevantConceptsRecommendationServicePoolPartyImpl(name: String, actorSystem: ActorSystem) extends RelevantConceptsRecommendationService {
 
 
   implicit private val requestTimeout = Timeout(800 seconds)
