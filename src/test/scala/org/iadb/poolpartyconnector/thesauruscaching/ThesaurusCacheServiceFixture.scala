@@ -11,13 +11,14 @@ trait ThesaurusCacheServiceFixture extends BeforeAndAfterAll {this: Suite =>
   val cache: ThesaurusCacheService = ThesaurusCacheServiceModule.service
 
   override def beforeAll(): Unit = {
-
+    super.beforeAll()
   }
 
 
   override def afterAll(): Unit = {
 
     ThesaurusCacheServiceModule.system.shutdown()
+    super.afterAll()
 
   }
 
