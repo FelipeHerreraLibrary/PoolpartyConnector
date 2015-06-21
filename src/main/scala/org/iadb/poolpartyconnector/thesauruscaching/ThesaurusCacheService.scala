@@ -1,5 +1,9 @@
 package org.iadb.poolpartyconnector.thesauruscaching
 
+import akka.actor.ActorSystem
+import akka.util.Timeout
+import scala.concurrent.duration._
+
 /**
  *
  * Created by Daniel Maatari Okouya on 6/19/15.
@@ -16,8 +20,10 @@ trait ThesaurusCacheService {
  * An Implementation of the CacheService for the PoolParty Thesaurus Server
  *
  */
-case class ThesaurusCacheServicePoolPartyImpl() extends  ThesaurusCacheService {
+case class ThesaurusCacheServicePoolPartyImpl(name: String, actorSystem: ActorSystem) extends  ThesaurusCacheService {
 
+  implicit private val requestTimeout = Timeout(800 seconds)
+  implicit private val system         = actorSystem
 
   //TODO support JelCode and Series
   var schemeList: List[String] =  List("http://thesaurus.iadb.org/publicthesauri/IdBTopics",
