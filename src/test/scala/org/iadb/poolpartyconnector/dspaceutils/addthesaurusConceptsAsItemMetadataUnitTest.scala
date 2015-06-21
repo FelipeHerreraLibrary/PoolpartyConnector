@@ -7,7 +7,7 @@ import org.scalatest.{GivenWhenThen, Matchers, FeatureSpec}
 /**
  * Created by Daniel Maatari Okouya on 6/6/15.
  */
-class addRecommendedMetadataUnitTest extends FeatureSpec with MockFactory with Matchers with GivenWhenThen {
+class addthesaurusConceptsAsItemMetadataUnitTest extends FeatureSpec with MockFactory with Matchers with GivenWhenThen {
 
 
     scenario("A non-empty set of metadata and an Item are submitted for an item metadata addation"){
