@@ -24,7 +24,7 @@ class ClassifyContentFeatureSpecification extends FeatureSpec with Matchers with
 
         val in = Files.newInputStream(new File(getClass.getResource("/UNWOMEN_surveyreport_ADVANCE_16Oct-short.pdf").toURI).toPath)
 
-        val classificationService = new PoolPartyClassificationService("PoolParty Classification Service", system)
+        val classificationService = new ClassificationServicePoolPartyImpl("PoolParty Classification Service", system)
 
 
       When("the content is submitted to the classification service for metadata recommendation")
