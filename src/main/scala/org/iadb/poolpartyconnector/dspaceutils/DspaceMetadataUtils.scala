@@ -62,7 +62,7 @@ object DspaceMetadataUtils {
     }
 
     //(schema: String, element: String, qualifier: String, lang: String, value: String, authority: String, confidence: Int)
-    (eltandqual._1, eltandqual._2, eltandqual._3, concept.language, concept.prefLabel, concept.uri, confidence)
+    (eltandqual._1, eltandqual._2, eltandqual._3, concept.language, concept.uri, concept.uri, confidence)
 
   }
 
