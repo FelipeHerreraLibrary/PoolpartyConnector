@@ -2,6 +2,7 @@ package org.iadb.poolpartyconnector.thesauruscaching
 
 import akka.actor.ActorSystem
 import akka.util.Timeout
+import org.iadb.poolpartyconnector.dspaceutils.ActorSystemSpringWrapperBean
 import spray.json._
 import JsonProtocolSpecification.Concept
 import JsonProtocolSpecification.JsonProtocol._
@@ -30,7 +31,7 @@ trait ThesaurusCacheService {
  * An Implementation of the CacheService for the PoolParty Thesaurus Server
  *
  */
-case class ThesaurusCacheServicePoolPartyImpl(name: String = "ThesaurusCacheServicePoolPartyImpl", actorSystem: ActorSystem) extends  ThesaurusCacheService {
+case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, name: String = "ThesaurusCacheServicePoolPartyImpl") extends  ThesaurusCacheService {
 
   implicit private val requestTimeout = Timeout(800 seconds)
   implicit private val system         = actorSystem
@@ -40,8 +41,12 @@ case class ThesaurusCacheServicePoolPartyImpl(name: String = "ThesaurusCacheServ
                                        "http://thesaurus.iadb.org/publicthesauri/IdBDepartments",
                                        "http://thesaurus.iadb.org/publicthesauri/IdBInstitutions",
                                        "http://thesaurus.iadb.org/publicthesauri/IdBCountries",
-                                       "http://thesaurus.iadb.org/publicthesauri/IdBTopics")
+                                       "http://thesaurus.iadb.org/publicthesauri/IdBAuthors")
 
+
+  def this(systembean: ActorSystemSpringWrapperBean) = {
+    this(systembean.getActorSystem)
+  }
 
   /**
    *
