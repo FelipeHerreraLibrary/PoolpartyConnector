@@ -11,6 +11,8 @@ trait DspaceItemWrapper {
 
   def item: Item
 
+  def update: Unit
+
 }
 
 
@@ -26,7 +28,7 @@ trait DspaceItemWrapper {
  * It helps in testing: We can mock this class as it is a type that we own.
  *
  */
-case class DspaceItemWrapperImpl(val item: Item)  extends DspaceItemWrapper{
+case class DspaceItemWrapperImpl(item: Item)  extends DspaceItemWrapper{
 
 
   /**
@@ -48,7 +50,7 @@ case class DspaceItemWrapperImpl(val item: Item)  extends DspaceItemWrapper{
 
   }
 
-
+  def update: Unit = item.update()
 }
 
 
