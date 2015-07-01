@@ -23,6 +23,7 @@ object DspaceMetadataUtils {
 
     poolpartyconceptresult.document foreach { doc =>
       doc.concepts foreach { conceptList =>
+        //val list = if (conceptList.size < 12) conceptList else conceptList.dropRight(conceptList.size - 12)
         conceptList foreach { concept =>
           val dsmetadata = getConceptInDspaceScheme(concept, Choices.CF_UNCERTAIN)
           //(schema: String, element: String, qualifier: String, lang: String, value: String, authority: String, confidence: Int)
@@ -31,12 +32,13 @@ object DspaceMetadataUtils {
       }
       doc.freeTerms foreach { freeTermList =>
         freeTermList foreach { freeTerm =>
-          val dsmetadata = getFreeTermInDspaceScheme(freeTerm, -2)
+          val dsmetadata = getFreeTermInDspaceScheme(freeTerm, -3)
           itemWrapper.addMetadata(dsmetadata._1, dsmetadata._2, dsmetadata._3, dsmetadata._4, dsmetadata._5, dsmetadata._6, dsmetadata._7)
         }
       }
     }
 
+    itemWrapper.update
     itemWrapper.item
   }
 
@@ -77,7 +79,7 @@ object DspaceMetadataUtils {
   private def getFreeTermInDspaceScheme(freeTerm: FreeTerm, confidence: Int) : Tuple7[String, String, String, String, String, String, Int] = {
 
     //(schema: String, element: String, qualifier: String, lang: String, value: String, authority: String, confidence: Int)
-    ("dc", "subject", null, "en", freeTerm.textValue, "suggest", -2)
+    ("dc", "subject", null, "en", freeTerm.textValue, "suggest", confidence)
 
   }
 
