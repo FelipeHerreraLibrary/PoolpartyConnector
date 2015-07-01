@@ -30,7 +30,7 @@ import spray.json._
  */
 trait RelevantConceptsRecommendationService {
 
-  def recommendMetadata(inputstream: InputStream) : ConceptResults
+  def recommendMetadata(inputstream: InputStream, lang: String) : ConceptResults
 
 }
 
@@ -39,7 +39,7 @@ trait RelevantConceptsRecommendationService {
  * Created by Daniel Maatari Okouya on 6/2/15.
  */
 
-case class RelevantConceptsRecommendationServicePoolPartyImpl(name: String, actorSystem: ActorSystem) extends RelevantConceptsRecommendationService {
+case class RelevantConceptsRecommendationServicePoolPartyImpl(actorSystem: ActorSystem, name: String = "RelevantConceptsRecommendationService") extends RelevantConceptsRecommendationService {
 
 
   implicit private val requestTimeout = Timeout(800 seconds)
@@ -50,7 +50,7 @@ case class RelevantConceptsRecommendationServicePoolPartyImpl(name: String, acto
   //TODO Exception Handling
   def this(systembean: ActorSystemSpringWrapperBean) = {
 
-    this("PoolPartyClassificationService", systembean.getActorSystem)
+    this(systembean.getActorSystem)
   }
 
 
@@ -60,7 +60,7 @@ case class RelevantConceptsRecommendationServicePoolPartyImpl(name: String, acto
    * @return
    */
 
-  def recommendMetadata(inputstream: InputStream): ConceptResults = {
+  def recommendMetadata(inputstream: InputStream, lang: String = "en"): ConceptResults = {
 
     println("Start Recommanding Process ...")
 
@@ -73,7 +73,7 @@ case class RelevantConceptsRecommendationServicePoolPartyImpl(name: String, acto
     val payload       = MultipartFormData(Seq(BodyPart(tmpToClassify, "file", MediaTypes.`application/pdf`)))
 
     //val request     = Post("http://thesaurus.iadb.org/extractor/api/extract?projectId=1DCE1C5E-6393-0001-F9FD-20401160CAC0&language=en", payload)
-    val request       = Post("http://127.0.0.1:8086/extractor/api/extract?projectId=1DCDFC5D-3876-0001-EEE6-BC9C1B8016CF&language=en", payload)
+    val request       = Post(s"http://127.0.0.1:8086/extractor/api/extract?projectId=1DCDFC5D-3876-0001-EEE6-BC9C1B8016CF&language=$lang", payload)
 
     val res           = pipeline(request)
 

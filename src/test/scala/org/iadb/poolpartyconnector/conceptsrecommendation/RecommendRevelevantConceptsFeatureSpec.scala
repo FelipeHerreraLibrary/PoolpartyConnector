@@ -24,7 +24,7 @@ class RecommendRevelevantConceptsFeatureSpec extends FeatureSpec with Matchers w
 
         val in = Files.newInputStream(new File(getClass.getResource("/UNWOMEN_surveyreport_ADVANCE_16Oct-short.pdf").toURI).toPath)
 
-        val classificationService = new RelevantConceptsRecommendationServicePoolPartyImpl("PoolParty Classification Service", system)
+        val classificationService = new RelevantConceptsRecommendationServicePoolPartyImpl(system)
 
 
       When("the content is submitted to the classification service for metadata recommendation")
@@ -36,9 +36,6 @@ class RecommendRevelevantConceptsFeatureSpec extends FeatureSpec with Matchers w
 
         recommendatedConcepts.document should not be(None)
 
-      And("a list empty or not of existing Concepts from the thesaurus ")
-
-       //recommendatedConcepts.document.get.concepts
 
     }
 
