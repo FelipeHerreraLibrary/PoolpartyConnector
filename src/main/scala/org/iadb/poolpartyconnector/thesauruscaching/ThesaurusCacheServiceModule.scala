@@ -13,8 +13,8 @@ trait ThesaurusCacheServiceModule {
 
   import com.softwaremill.macwire._
 
-  lazy val system = ActorSystem()
-  lazy val service: ThesaurusCacheService = wire[ThesaurusCacheServicePoolPartyImpl]
+  def system = ActorSystem()
+  def service: ThesaurusCacheService = wire[ThesaurusCacheServicePoolPartyImpl]
 
 }
 

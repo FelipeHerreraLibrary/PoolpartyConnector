@@ -17,6 +17,8 @@ trait ThesaurusCacheServiceFixture extends BeforeAndAfterAll {this: Suite =>
 
   override def afterAll(): Unit = {
 
+    println("\n\n\n******ShutingDown: " + ThesaurusCacheServiceModule.system.toString + "*******\n\n\n")
+
     ThesaurusCacheServiceModule.system.shutdown()
     super.afterAll()
 
