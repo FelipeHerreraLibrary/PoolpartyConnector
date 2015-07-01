@@ -21,11 +21,43 @@ import scala.concurrent.duration._
  */
 trait ThesaurusCacheService {
 
+  /**
+   *  Find a Concept Prefered Label in the supplied Language otherwise its the Default Language
+   *
+   * @param uri
+   * @param lang
+   * @return
+   */
+
+  def getConceptPrefLabelWithDefaultLangfallback(uri: String, lang: String): String
+
+
+  /**
+   *  Find a Concept Prefered Label in the supplied Language
+   *
+   * @param uri
+   * @param lang
+   * @return
+   */
   def getPrefLabelforConcept(uri: String, lang:String = "en") : String
 
 
+  /**
+   * Check if a specific Scheme is part of the ThesarusCacheService
+   *
+   * @param scheme
+   * @return
+   */
   def isSchemeInCache(scheme: Option[String]): Boolean
 }
+
+
+
+
+
+
+
+
 
 /**
  * An Implementation of the CacheService for the PoolParty Thesaurus Server
@@ -61,13 +93,28 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, name: St
 
       case None => false
       case Some(e) => schemeList.contains(e)
-      case _ => false
-
-
     }
 
   }
 
+  /**
+   *  Find a Concept Prefered Label in the supplied Language otherwise its the Default Language
+   *
+   * @param uri
+   * @param lang
+   * @return
+   */
+
+  def getConceptPrefLabelWithDefaultLangfallback(uri: String, lang: String) = {
+
+    getPrefLabelforConcept(uri, lang) match {
+
+      case e if e.isEmpty => getPrefLabelforConcept(uri, "en")
+      case e => e
+
+    }
+
+  }
 
   /**
    *
@@ -79,10 +126,11 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, name: St
 
     import system.dispatcher
 
+    val alang = getlangOrdefault(lang)
 
     val pipeline      = addCredentials(BasicHttpCredentials("superadmin", "poolparty")) ~> sendReceive
 
-    val request       = Get(s"http://127.0.0.1:8086/PoolParty/api/thesaurus/1DCDFC5D-3876-0001-EEE6-BC9C1B8016CF/concept?concept=$uri&language=$lang")
+    val request       = Get(s"http://127.0.0.1:8086/PoolParty/api/thesaurus/1DCDFC5D-3876-0001-EEE6-BC9C1B8016CF/concept?concept=$uri&language=$alang")
 
     val res           = pipeline(request)
 
@@ -90,8 +138,19 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, name: St
       case Some(e) => e.prefLabel
       case _ => ""
     }
+
   }
 
+  private def getlangOrdefault(lang: String): String = {
+
+    lang match {
+      case "en" => "en"
+      case "es" => "es"
+      case "fr" => "fr"
+      case "pt" => "pt"
+      case _ => "en"
+    }
+  }
 
   /**
    *  Await for the future Http response to arrive
@@ -108,15 +167,24 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, name: St
 
       val reponse = Await.result(res, Duration.Inf)
 
-      println(reponse.entity.data.asString)
+      println("\n\n## " + reponse.entity.data.asString + "\n\n##")
 
       Some(reponse.entity.data.asString.parseJson.convertTo[Concept])
 
     }catch {
 
-      case e:Throwable => None
+      case e:Throwable => {
+
+        println(s"\n\n***\n\nError: \n$e\n\n***\n\n")
+
+        None
+      }
+
       //TODO Add the possible throwable here: those of await result and log the error
+
     }
 
   }
+
+
 }
