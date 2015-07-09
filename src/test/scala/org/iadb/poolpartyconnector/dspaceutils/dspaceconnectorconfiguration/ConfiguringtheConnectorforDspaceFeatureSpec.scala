@@ -87,7 +87,7 @@ class ConfiguringtheConnectorforDspaceFeatureSpec extends FeatureSpec with Given
       When("getting the metadata field settings List from the connector Settings object")
 
         val connectorsettings = DspaceDspacePoolPartyConnectorSettingImpl ("file:///Users/maatary/Dev/IdeaProjects/PoolpartyConnector/src/test/resources/poolpartydspace.conf")
-        val fieldSettinglist  = connectorsettings.fieldsSettings
+        val fieldSettinglist  = connectorsettings.fieldsSettingsList
 
 
 

@@ -12,7 +12,8 @@ import scala.collection.JavaConverters._
  */
 trait DspacePoolPartyConnectorSettings {
 
-  def fieldsSettings : List[FieldSettings]
+  def fieldsSettingsList : List[FieldSettings]
+  def fieldsSettingsMap : Map[String, FieldSettings]
 
 }
 
@@ -24,10 +25,15 @@ case class DspaceDspacePoolPartyConnectorSettingImpl (configUri: String) extends
   private val confSettinglist = conf.getConfigList("PoolPartyConnectorSettings.FieldSettings").asScala.toList
 
 
-  val fieldsSettings          =  confSettinglist map { e =>
+  val fieldsSettingsList          =  confSettinglist map { e =>
                                                   FieldSettings(e.getString("fieldname"), e.getBoolean("treeBrowser"),
                                                   e.getBoolean("multilanguage"), e.getStringList("languages").asScala.toList,
                                                   e.getBoolean("closed"), e.getString("scheme"), e.getString("poolpartyProjectId")
     )
   }
+
+
+  val fieldsSettingsMap = Map(fieldsSettingsList map {e => (e.fieldName, e)}: _*)
+
+
 }
