@@ -24,6 +24,7 @@ libraryDependencies ++=
       "org.dspace" % "dspace-api" % "1.8.2",
       "com.softwaremill.macwire" %% "macros" % "1.0.5",
       "com.softwaremill.macwire" %% "runtime" % "1.0.5",
+      "com.typesafe" % "config" % "1.3.0",
       "org.scalamock" %% "scalamock-scalatest-support" % "3.2" % "test",
       "javax.servlet" % "javax.servlet-api" % "3.0.1" % "test",
       "com.oracle" % "ojdbc6" % "11.2.0.2.0" % "test",
