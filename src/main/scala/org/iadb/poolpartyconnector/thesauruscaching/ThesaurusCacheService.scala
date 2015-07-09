@@ -141,16 +141,7 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, name: St
 
   }
 
-  private def getlangOrdefault(lang: String): String = {
 
-    lang match {
-      case "en" => "en"
-      case "es" => "es"
-      case "fr" => "fr"
-      case "pt" => "pt"
-      case _ => "en"
-    }
-  }
 
   /**
    *  Await for the future Http response to arrive
@@ -186,5 +177,15 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, name: St
 
   }
 
+  private def getlangOrdefault(lang: String): String = {
+
+    lang match {
+      case "en" => "en"
+      case "es" => "es"
+      case "fr" => "fr"
+      case "pt" => "pt"
+      case _ => "en"
+    }
+  }
 
 }
