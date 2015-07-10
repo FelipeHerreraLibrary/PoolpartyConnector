@@ -2,6 +2,7 @@ package org.iadb.poolpartyconnector.dspaceutils.dspaceconnectorconfiguration
 
 import java.net.URL
 import com.typesafe.config.ConfigFactory
+import org.iadb.poolpartyconnector.connectorconfiguration.PoolpartySettings
 import scala.collection.JavaConverters._
 
 
@@ -12,8 +13,9 @@ import scala.collection.JavaConverters._
  */
 trait DspacePoolPartyConnectorSettings {
 
-  def fieldsSettingsList : List[FieldSettings]
-  def fieldsSettingsMap : Map[String, FieldSettings]
+  def poolpartyServerSettings : PoolpartySettings
+  def fieldsSettingsList      : List[FieldSettings]
+  def fieldsSettingsMap       : Map[String, FieldSettings]
 
 }
 
@@ -21,15 +23,23 @@ trait DspacePoolPartyConnectorSettings {
 case class DspaceDspacePoolPartyConnectorSettingImpl (configUri: String) extends DspacePoolPartyConnectorSettings {
 
 
-  private val conf            = ConfigFactory.parseURL(new URL(configUri)).resolve()
-  private val confSettinglist = conf.getConfigList("PoolPartyConnectorSettings.FieldSettings").asScala.toList
+  private val config                 = ConfigFactory.parseURL(new URL(configUri)).resolve()
+  private val configFieldSettinglist = config.getConfigList("PoolPartyConnectorSettings.FieldSettings").asScala.toList
+  private val configPoolPartySetting = config.getConfig("PoolPartyConnectorSettings.PoolPartySettings")
 
 
-  val fieldsSettingsList          =  confSettinglist map { e =>
+  val poolpartyServerSettings        = PoolpartySettings( configPoolPartySetting.getString("apirootEndpoint"),
+                                                          configPoolPartySetting.getString("thesaurusapiEndpoint"),
+                                                          configPoolPartySetting.getString("extratorapiEndpoint"),
+                                                          configPoolPartySetting.getString("coreProjectId"),
+                                                          configPoolPartySetting.getString("coreThesaurusUri"),
+                                                          configPoolPartySetting.getString("jelProjectId"),
+                                                          configPoolPartySetting.getString("jelThesaurusUri"))
+
+  val fieldsSettingsList             =  configFieldSettinglist map { e =>
                                                   FieldSettings(e.getString("fieldname"), e.getBoolean("treeBrowser"),
                                                   e.getBoolean("multilanguage"), e.getStringList("languages").asScala.toList,
-                                                  e.getBoolean("closed"), e.getString("scheme"), e.getString("poolpartyProjectId")
-    )
+                                                  e.getBoolean("closed"), e.getString("scheme"), e.getString("poolpartyProjectId"))
   }
 
 

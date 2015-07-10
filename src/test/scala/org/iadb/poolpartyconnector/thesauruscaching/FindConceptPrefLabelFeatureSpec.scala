@@ -1,6 +1,6 @@
 package org.iadb.poolpartyconnector.thesauruscaching
 
-import org.scalatest.{FeatureSpec, fixture, Matchers, GivenWhenThen}
+import org.scalatest.{FeatureSpec, Matchers, GivenWhenThen}
 
 /**
  * Created by Daniel Maatari Okouya on 6/21/15.
