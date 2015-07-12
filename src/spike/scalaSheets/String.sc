@@ -1,3 +1,5 @@
+import org.iadb.poolpartyconnector.dspaceutils.AuthorityKeyUtils
+import org.iadb.poolpartyconnector.utils.ConceptUriChecker
 
 case class Value(authority: String)
 
@@ -10,3 +12,29 @@ if (value.authority.contains("say/")) {
 }
 
 "http://thesaurus.iadb.org/publicthesauri/IdBCountries" == "http://thesaurus.iadb.org/publicthesauri/IdBCountries"
+
+val str = "http://xxx:http://xxx2"
+
+str.indexOf(':', 5)
+
+str.splitAt(str.indexOf(':', 5))
+
+AuthorityKeyUtils.splitAuthrotiyandKey(str)
+
+
+ConceptUriChecker.isValidConceptUri("")
+
+//ConceptUriChecker.isValidConceptUri("http://thesaurus.iadb.org")
+
+def langfallbackifrequired(lang: String): String = {
+
+  lang match {
+    case "en" => "en"
+    case "es" => "es"
+    case "fr" => "fr"
+    case "pt" => "pt"
+    case _ => "en"
+  }
+}
+
+langfallbackifrequired("*")

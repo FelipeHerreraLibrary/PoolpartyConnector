@@ -85,7 +85,30 @@ trait ConfigFixture extends BeforeAndAfterAll { this: Suite =>
                                   |
                                   |    },
                                   |.......
-                                  |    """
+                                  |
+                                  |    "skoslangcodesmappings": [
+                                  |
+                                  |    {
+                                  |      "language": "english"
+                                  |      "skoscode": "en"
+                                  |    },
+                                  |
+                                  |    {
+                                  |      "language": "spanish"
+                                  |      "skoscode": "es"
+                                  |    },
+                                  |
+                                  |    {
+                                  |      "language": "french"
+                                  |      "skoscode": "fr"
+                                  |    },
+                                  |
+                                  |    {
+                                  |      "language": "portuguese"
+                                  |      "skoscode": "pt"
+                                  |    },
+                                  |
+                                  |  ]"""
 
     super.beforeAll() // To be stackable, must call super.beforeEach
   }
@@ -150,8 +173,38 @@ class ConfiguringtheConnectorforDspaceFeatureSpec extends FeatureSpec with Confi
 
     }
 
+    scenario("Dspace wants to obtain the Connector's Skos Code Mapping") {
 
 
+      Given("the Setting Object set up with a Connector Configuration file that contain the following settings for the PoolParty Server: ")
+
+
+        info(expectedconfigInfoFixtVal)
+
+        val loadedConnectorSettings = loadedConnectorSettingsFixtVal
+
+      When("getting the Connector Skos language code mapping settings")
+
+        val skoscodesmappings  = loadedConnectorSettings.skoslangCodesMappingsMap
+
+
+      Then("it should contain the same settings values as in the configuration files for english")
+
+        skoscodesmappings.get("english") should equal (Some(SkoslangCodeMapping("english", "en")))
+
+      Then("it should contain the same settings values as in the configuration files for spanish")
+
+        skoscodesmappings.get("spanish") should equal (Some(SkoslangCodeMapping("spanish", "es")))
+
+      Then("it should contain the same settings values as in the configuration files for french")
+
+        skoscodesmappings.get("french") should equal (Some(SkoslangCodeMapping("french", "fr")))
+
+      Then("it should contain the same settings values as in the configuration files for portuguese")
+
+        skoscodesmappings.get("portuguese") should equal (Some(SkoslangCodeMapping("portuguese", "pt")))
+
+    }
 
   }
 
