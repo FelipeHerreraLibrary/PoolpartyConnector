@@ -3,7 +3,7 @@ package org.iadb.poolpartyconnector.dspaceutils.dspaceconnectorconfiguration
 /**
  * Created by Daniel Maatari Okouya on 7/8/15.
  *
- * The settings of each metadata field in dspace
+ * The settings of each metadata field in Dspace
  *
  */
 
