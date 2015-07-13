@@ -1,6 +1,7 @@
 package org.iadb.poolpartyconnector.dspacextension
 
 import org.dspace.content.Item
+import org.iadb.poolpartyconnector.dspacextension.dspacedatamodeladaptation.DspaceItemWrapper
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{GivenWhenThen, Matchers, FeatureSpec}
 

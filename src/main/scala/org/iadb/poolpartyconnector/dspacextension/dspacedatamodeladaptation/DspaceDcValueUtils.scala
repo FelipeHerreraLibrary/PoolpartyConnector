@@ -1,4 +1,4 @@
-package org.iadb.poolpartyconnector.dspacextension
+package org.iadb.poolpartyconnector.dspacextension.dspacedatamodeladaptation
 
 import org.dspace.content.DCValue
 import org.iadb.poolpartyconnector.thesaurusoperation.CachedConcept

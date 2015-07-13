@@ -1,10 +1,9 @@
-package org.iadb.poolpartyconnector.dspacextension
+package org.iadb.poolpartyconnector.dspacextension.dspacedatamodeladaptation
 
 import org.dspace.content.Item
 import org.dspace.content.authority.Choices
 import org.iadb.poolpartyconnector.conceptsrecommendation.JsonProtocolSpecification
-import JsonProtocolSpecification.{FreeTerm, Concept, ConceptResults}
-import org.iadb.poolpartyconnector.conceptsrecommendation.JsonProtocolSpecification
+import org.iadb.poolpartyconnector.conceptsrecommendation.JsonProtocolSpecification.{Concept, ConceptResults, FreeTerm}
 
 /**
  * Created by Daniel Maatari Okouya on 6/6/15.

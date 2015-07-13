@@ -1,4 +1,4 @@
-package org.iadb.poolpartyconnector.dspacextension
+package org.iadb.poolpartyconnector.dspacextension.dspacedatamodeladaptation
 
 /**
  * Created by Daniel Maatari Okouya on 6/22/15.

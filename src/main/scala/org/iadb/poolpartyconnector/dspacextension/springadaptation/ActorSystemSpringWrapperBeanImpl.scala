@@ -1,4 +1,4 @@
-package org.iadb.poolpartyconnector.dspacextension
+package org.iadb.poolpartyconnector.dspacextension.springadaptation
 
 import akka.actor.ActorSystem
 

@@ -1,5 +1,6 @@
 package org.iadb.poolpartyconnector.dspacextension
 
+import org.iadb.poolpartyconnector.dspacextension.dspacedatamodeladaptation.DspaceDcValueUtils
 import org.iadb.poolpartyconnector.thesaurusoperation.{CachedConcept, IndexCachedConcept}
 import org.scalatest.{Matchers, GivenWhenThen, FunSpec}
 
