@@ -1,7 +1,7 @@
 package org.iadb.poolpartyconnector.dspaceutils
 
 import org.dspace.content.DCValue
-import org.iadb.poolpartyconnector.thesauruscaching.CachedConcept
+import org.iadb.poolpartyconnector.thesaurusoperation.CachedConcept
 
 /**
  * Created by Daniel Maatari Okouya on 6/21/15.

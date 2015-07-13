@@ -1,4 +1,4 @@
-package org.iadb.poolpartyconnector.thesauruscaching
+package org.iadb.poolpartyconnector.thesaurusoperation
 
 import org.iadb.poolpartyconnector.dspaceutils.DspaceMetaDatumToSchemeUtil
 import org.scalatest.{Matchers, GivenWhenThen, FunSpec}

@@ -1,6 +1,6 @@
 package org.iadb.poolpartyconnector.dspaceutils
 
-import org.iadb.poolpartyconnector.thesauruscaching.{CachedConcept, IndexCachedConcept}
+import org.iadb.poolpartyconnector.thesaurusoperation.{CachedConcept, IndexCachedConcept}
 import org.scalatest.{Matchers, GivenWhenThen, FunSpec}
 
 /**

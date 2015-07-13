@@ -1,4 +1,4 @@
-package org.iadb.poolpartyconnector.thesauruscaching
+package org.iadb.poolpartyconnector.thesaurusoperation
 
 import spray.json.DefaultJsonProtocol
 

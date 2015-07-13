@@ -1,4 +1,4 @@
-package org.iadb.poolpartyconnector.thesauruscaching
+package org.iadb.poolpartyconnector.thesaurusoperation
 
 /**
  * Created by Daniel Maatari Okouya on 6/21/15.
