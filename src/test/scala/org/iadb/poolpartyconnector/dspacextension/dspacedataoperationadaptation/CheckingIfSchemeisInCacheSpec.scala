@@ -1,5 +1,6 @@
-package org.iadb.poolpartyconnector.thesaurusoperation
+package org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation
 
+import org.iadb.poolpartyconnector.thesaurusoperation.ThesaurusCacheServiceFixture
 import org.scalatest._
 
 /**

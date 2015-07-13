@@ -1,8 +1,7 @@
-package org.iadb.poolpartyconnector.dspacextension
+package org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation
 
-import org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation.DspaceDcValueUtils
-import org.iadb.poolpartyconnector.thesaurusoperation.{CachedConcept, IndexCachedConcept}
-import org.scalatest.{Matchers, GivenWhenThen, FunSpec}
+import org.iadb.poolpartyconnector.thesaurusoperation.IndexCachedConcept
+import org.scalatest.{FunSpec, GivenWhenThen, Matchers}
 
 /**
  * Created by Daniel Maatari Okouya on 6/21/15.
