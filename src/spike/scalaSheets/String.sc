@@ -1,4 +1,4 @@
-import org.iadb.poolpartyconnector.dspacextension.dspacedatamodeladaptation.AuthorityKeyUtils
+import org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation.AuthorityKeyUtils
 import org.iadb.poolpartyconnector.utils.ConceptUriChecker
 
 case class Value(authority: String)

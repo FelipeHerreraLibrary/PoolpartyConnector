@@ -1,6 +1,6 @@
 package org.iadb.poolpartyconnector.thesaurusoperation
 
-import org.iadb.poolpartyconnector.dspacextension.dspacedatamodeladaptation.DspaceMetaDatumToSchemeUtil
+import org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation.DspaceMetaDatumToSchemeUtil
 import org.scalatest.{Matchers, GivenWhenThen, FunSpec}
 
 import scala.None

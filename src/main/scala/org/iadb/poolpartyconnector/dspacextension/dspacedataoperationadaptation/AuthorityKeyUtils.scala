@@ -1,10 +1,7 @@
-package org.iadb.poolpartyconnector.dspacextension.dspacedatamodeladaptation
+package org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation
 
-/**
- * Created by Daniel Maatari Okouya on 6/22/15.
- */
+import org.iadb.poolpartyconnector.dspacextension.dspacedatamodeladaptation.AuthorityandKey
 
-case class AuthorityandKey(auth: String, key:String)
 
 object AuthorityKeyUtils {
 
