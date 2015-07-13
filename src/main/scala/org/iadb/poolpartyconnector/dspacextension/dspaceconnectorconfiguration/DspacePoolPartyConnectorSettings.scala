@@ -1,4 +1,4 @@
-package org.iadb.poolpartyconnector.dspaceutils.dspaceconnectorconfiguration
+package org.iadb.poolpartyconnector.dspacextension.dspaceconnectorconfiguration
 
 import java.net.URL
 import com.typesafe.config.ConfigFactory

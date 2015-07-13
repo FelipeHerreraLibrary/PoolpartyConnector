@@ -1,4 +1,4 @@
-package org.iadb.poolpartyconnector.dspaceutils.dspaceconnectorconfiguration
+package org.iadb.poolpartyconnector.dspacextension.dspaceconnectorconfiguration
 
 import org.iadb.poolpartyconnector.connectorconfiguration.PoolpartySettings
 import org.scalatest._

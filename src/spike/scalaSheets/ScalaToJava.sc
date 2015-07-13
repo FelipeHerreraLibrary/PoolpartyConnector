@@ -1,4 +1,4 @@
-import org.iadb.poolpartyconnector.dspaceutils.dspaceconnectorconfiguration.FieldSettings
+import org.iadb.poolpartyconnector.dspacextension.dspaceconnectorconfiguration.FieldSettings
 import org.iadb.poolpartyconnector.scalajavaconversion.ScalatoJava
 
 

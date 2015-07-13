@@ -1,4 +1,4 @@
-package org.iadb.poolpartyconnector.dspaceutils.dspaceconnectorconfiguration
+package org.iadb.poolpartyconnector.dspacextension.dspaceconnectorconfiguration
 
 /**
  * Created by Daniel Maatari Okouya on 7/12/15.

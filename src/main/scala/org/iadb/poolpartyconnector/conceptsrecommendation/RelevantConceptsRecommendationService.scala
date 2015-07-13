@@ -8,7 +8,7 @@ import java.io.{InputStream}
 import akka.actor.ActorSystem
 
 import akka.util.Timeout
-import org.iadb.poolpartyconnector.dspaceutils.ActorSystemSpringWrapperBean
+import org.iadb.poolpartyconnector.dspacextension.ActorSystemSpringWrapperBean
 
 import JsonProtocolSpecification.PoolPartyJsonProtocol._
 

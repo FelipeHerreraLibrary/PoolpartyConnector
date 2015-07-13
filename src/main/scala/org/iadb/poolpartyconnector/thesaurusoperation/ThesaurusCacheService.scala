@@ -2,7 +2,7 @@ package org.iadb.poolpartyconnector.thesaurusoperation
 
 import akka.actor.ActorSystem
 import akka.util.Timeout
-import org.iadb.poolpartyconnector.dspaceutils.ActorSystemSpringWrapperBean
+import org.iadb.poolpartyconnector.dspacextension.ActorSystemSpringWrapperBean
 import spray.json._
 import JsonProtocolSpecification.Concept
 import JsonProtocolSpecification.JsonProtocol._

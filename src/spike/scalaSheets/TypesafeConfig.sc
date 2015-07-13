@@ -1,7 +1,7 @@
 import java.net.URL
 
 import com.typesafe.config.ConfigFactory
-import org.iadb.poolpartyconnector.dspaceutils.dspaceconnectorconfiguration.FieldSettings
+import org.iadb.poolpartyconnector.dspacextension.dspaceconnectorconfiguration.FieldSettings
 import scala.collection.JavaConverters._
 val conf = ConfigFactory.parseURL(new URL("file:///Users/maatary/Dev/IdeaProjects/PoolpartyConnector/src/spike/resources/poolpartydspace.conf"))
 .resolve()
