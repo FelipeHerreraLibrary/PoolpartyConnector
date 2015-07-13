@@ -19,7 +19,7 @@ object DspaceMetadataUtils {
    * @param poolpartyconceptresult
    * @return
    */
-  def addthesaurusConceptsAsItemMetadata(itemWrapper : DspaceItemWrapper, poolpartyconceptresult: ConceptResults): Item = {
+  def addthesaurusConceptsAsItemMetadata(itemWrapper : DspaceItemWrapper, poolpartyconceptresult: ConceptResults, lang: String = "en"): Item = {
 
     poolpartyconceptresult.document foreach { doc =>
       doc.concepts foreach { conceptList =>
@@ -30,10 +30,13 @@ object DspaceMetadataUtils {
           itemWrapper.addMetadata(dsmetadata._1, dsmetadata._2, dsmetadata._3, dsmetadata._4, dsmetadata._5, dsmetadata._6, dsmetadata._7)
         }
       }
-      doc.freeTerms foreach { freeTermList =>
-        freeTermList foreach { freeTerm =>
-          val dsmetadata = getFreeTermInDspaceScheme(freeTerm, -3)
-          itemWrapper.addMetadata(dsmetadata._1, dsmetadata._2, dsmetadata._3, dsmetadata._4, dsmetadata._5, dsmetadata._6, dsmetadata._7)
+
+      if (lang == "en" ) {
+        doc.freeTerms foreach { freeTermList =>
+          freeTermList foreach { freeTerm =>
+            val dsmetadata = getFreeTermInDspaceScheme(freeTerm, -3)
+            itemWrapper.addMetadata(dsmetadata._1, dsmetadata._2, dsmetadata._3, dsmetadata._4, dsmetadata._5, dsmetadata._6, dsmetadata._7)
+          }
         }
       }
     }
@@ -76,10 +79,10 @@ object DspaceMetadataUtils {
    * @param freeTerm A PoolParty Concept
    * @return
    */
-  private def getFreeTermInDspaceScheme(freeTerm: FreeTerm, confidence: Int) : Tuple7[String, String, String, String, String, String, Int] = {
+  private def getFreeTermInDspaceScheme(freeTerm: FreeTerm, confidence: Int, lang: String = "en") : Tuple7[String, String, String, String, String, String, Int] = {
 
     //(schema: String, element: String, qualifier: String, lang: String, value: String, authority: String, confidence: Int)
-    ("dc", "subject", null, "en", freeTerm.textValue, "suggest", confidence)
+    ("dc", "subject", null, lang, freeTerm.textValue, "suggest", confidence)
 
   }
 
