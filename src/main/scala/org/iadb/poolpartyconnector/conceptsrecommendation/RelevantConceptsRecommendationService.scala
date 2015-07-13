@@ -1,8 +1,8 @@
 package org.iadb.poolpartyconnector.conceptsrecommendation
 
 
-import org.iadb.poolpartyconnector.poolpartyjsonprotocol.PoolPartyJsonProtocolSpecification
-import PoolPartyJsonProtocolSpecification.ConceptResults
+
+import JsonProtocolSpecification.ConceptResults
 import java.io.{InputStream}
 
 import akka.actor.ActorSystem
@@ -10,7 +10,7 @@ import akka.actor.ActorSystem
 import akka.util.Timeout
 import org.iadb.poolpartyconnector.dspaceutils.ActorSystemSpringWrapperBean
 
-import PoolPartyJsonProtocolSpecification.PoolPartyJsonProtocol._
+import JsonProtocolSpecification.PoolPartyJsonProtocol._
 
 import org.iadb.poolpartyconnector.utils.TemporaryCopyUtils
 import spray.client.pipelining._

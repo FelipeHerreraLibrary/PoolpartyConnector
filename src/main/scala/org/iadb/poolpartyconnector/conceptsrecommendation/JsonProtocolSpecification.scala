@@ -1,4 +1,4 @@
-package org.iadb.poolpartyconnector.poolpartyjsonprotocol
+package org.iadb.poolpartyconnector.conceptsrecommendation
 
 import spray.json.DefaultJsonProtocol
 
@@ -7,7 +7,7 @@ import spray.json.DefaultJsonProtocol
  *
  * The Spray Json Protocol for PoolParty
  */
-object PoolPartyJsonProtocolSpecification {
+object JsonProtocolSpecification {
 
 
 

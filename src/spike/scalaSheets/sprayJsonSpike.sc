@@ -1,7 +1,8 @@
 
-import org.iadb.poolpartyconnector.poolpartyjsonprotocol.PoolPartyJsonProtocolSpecification._
+import org.iadb.poolpartyconnector.conceptsrecommendation.JsonProtocolSpecification
+import JsonProtocolSpecification._
 
-import org.iadb.poolpartyconnector.poolpartyjsonprotocol.PoolPartyJsonProtocolSpecification.PoolPartyJsonProtocol._
+import JsonProtocolSpecification.PoolPartyJsonProtocol._
 
 
 
