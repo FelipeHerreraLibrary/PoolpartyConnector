@@ -1,4 +1,4 @@
-package org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation
+package org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation.authoritykeyoperation
 
 import org.iadb.poolpartyconnector.dspacextension.dspacedatamodeladaptation.AuthorityandKey
 

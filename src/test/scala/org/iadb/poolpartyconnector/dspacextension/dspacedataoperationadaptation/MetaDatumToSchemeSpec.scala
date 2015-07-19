@@ -1,5 +1,6 @@
 package org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation
 
+import org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation.schememapping.DspaceMetaDatumToSchemeUtil
 import org.scalatest.{FunSpec, GivenWhenThen, Matchers}
 
 /**

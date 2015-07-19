@@ -13,12 +13,11 @@ import scala.collection.JavaConverters._
  */
 trait DspacePoolPartyConnectorSettings {
 
-  def poolpartyServerSettings  : PoolpartySettings
-  def fieldsSettingsList       : List[FieldSettings]
-  def fieldsSettingsMap        : Map[String, FieldSettings]
+  def poolpartyServerSettings   : PoolpartySettings
+  def fieldsSettingsList        : List[FieldSettings]
+  def fieldsSettingsMap         : Map[String, FieldSettings]
   def skoslangCodesMappingsList : List[SkoslangCodeMapping]
   def skoslangCodesMappingsMap  : Map[String, SkoslangCodeMapping]
-
 }
 
 
@@ -29,7 +28,6 @@ case class DspaceDspacePoolPartyConnectorSettingImpl (configUri: String) extends
   private val configFieldSettingslist          = config.getConfigList("PoolPartyConnectorSettings.FieldSettings").asScala.toList
   private val configPoolPartySettings          = config.getConfig("PoolPartyConnectorSettings.PoolPartySettings")
   private val configSkosLangCodesMappingsList  = config.getConfigList("PoolPartyConnectorSettings.skoslangcodesmappings").asScala.toList
-
 
 
   val poolpartyServerSettings            = PoolpartySettings( configPoolPartySettings.getString("apirootEndpoint"),
@@ -56,4 +54,5 @@ case class DspaceDspacePoolPartyConnectorSettingImpl (configUri: String) extends
 
 
   val skoslangCodesMappingsMap           = Map(skoslangCodesMappingsList map {e => (e.lang, e)}: _*)
+
 }

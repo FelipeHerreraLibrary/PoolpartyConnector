@@ -1,4 +1,4 @@
-package org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation
+package org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation.schememapping
 
 /**
  * Created by Daniel Maatari Okouya on 6/19/15.

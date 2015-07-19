@@ -1,14 +1,18 @@
-package org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation
+package org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation.dspaceitemoperation
 
 import org.dspace.content.Item
 import org.dspace.content.authority.Choices
 import org.iadb.poolpartyconnector.conceptsrecommendation.JsonProtocolSpecification.{Concept, ConceptResults, FreeTerm}
-import org.iadb.poolpartyconnector.dspacextension.dspacedatamodeladaptation.DspaceItemWrapper
+import org.iadb.poolpartyconnector.dspacextension.dspacedatamodeladaptation.{DspaceMetadatum, DspaceItemWrapper}
+import org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation.schememapping.SchemeMetadatumMappingService
 
 /**
  * Created by Daniel Maatari Okouya on 6/6/15.
  */
-object DspaceMetadataUtils {
+
+
+case class DspaceItemOperatorService(schemeMappingService: SchemeMetadatumMappingService) {
+
 
 
   /**
@@ -19,7 +23,7 @@ object DspaceMetadataUtils {
    * @param poolpartyconceptresult
    * @return
    */
-  def addthesaurusConceptsAsItemMetadata(itemWrapper : DspaceItemWrapper, poolpartyconceptresult: ConceptResults, lang: String = "en"): Item = {
+  def updateItemMetadataWithRecommendedConcepts(itemWrapper : DspaceItemWrapper, poolpartyconceptresult: ConceptResults, lang: String = "en"): Item = {
 
     poolpartyconceptresult.document foreach { doc =>
       doc.concepts foreach { conceptList =>
@@ -31,14 +35,13 @@ object DspaceMetadataUtils {
         }
       }
 
-      if (lang == "en" ) {
-        doc.freeTerms foreach { freeTermList =>
-          freeTermList foreach { freeTerm =>
-            val dsmetadata = getFreeTermInDspaceScheme(freeTerm, -3)
-            itemWrapper.addMetadata(dsmetadata._1, dsmetadata._2, dsmetadata._3, dsmetadata._4, dsmetadata._5, dsmetadata._6, dsmetadata._7)
-          }
+      doc.freeTerms foreach { freeTermList =>
+        freeTermList foreach { freeTerm =>
+          val dsmetadata = getFreeTermInDspaceScheme(freeTerm, -3, lang)
+          itemWrapper.addMetadata(dsmetadata._1, dsmetadata._2, dsmetadata._3, dsmetadata._4, dsmetadata._5, dsmetadata._6, dsmetadata._7)
         }
       }
+
     }
 
     itemWrapper.update
@@ -56,19 +59,11 @@ object DspaceMetadataUtils {
   private def getConceptInDspaceScheme(concept: Concept, confidence: Int) : Tuple7[String, String, String, String, String, String, Int] = {
 
 
-    val eltandqual = concept.conceptSchemes.head.uri match {
 
-      case "http://thesaurus.iadb.org/publicthesauri/IdBTopics" => ("dc", "subject", null)
-      case "http://thesaurus.iadb.org/publicthesauri/IdBDepartments" => ("iadb", "department", null)
-      case "http://thesaurus.iadb.org/publicthesauri/IdBInstitutions" => ("dc", "contributor", "institution")
-      case "http://thesaurus.iadb.org/publicthesauri/IdBCountries" => ("dc", "coverage", "placename")
-      case "http://thesaurus.iadb.org/publicthesauri/IdBAuthors" => ("dc", "contributor", "author")
+    val dspaceMetadatum = schemeMappingService.getFieldsforScheme(concept.conceptSchemes.head.uri).head
 
-    }
-
+    (dspaceMetadatum.ns.get, dspaceMetadatum.elt.get, dspaceMetadatum.qual.getOrElse(null), concept.language, concept.uri, concept.uri, confidence)
     //(schema: String, element: String, qualifier: String, lang: String, value: String, authority: String, confidence: Int)
-    (eltandqual._1, eltandqual._2, eltandqual._3, concept.language, concept.uri, concept.uri, confidence)
-
   }
 
 

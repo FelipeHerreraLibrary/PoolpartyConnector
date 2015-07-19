@@ -192,19 +192,20 @@ class ConfiguringtheConnectorforDspaceFeatureSpec extends FeatureSpec with Confi
 
         skoscodesmappings.get("english") should equal (Some(SkoslangCodeMapping("english", "en")))
 
-      Then("it should contain the same settings values as in the configuration files for spanish")
+      And("it should contain the same settings values as in the configuration files for spanish")
 
         skoscodesmappings.get("spanish") should equal (Some(SkoslangCodeMapping("spanish", "es")))
 
-      Then("it should contain the same settings values as in the configuration files for french")
+      And("it should contain the same settings values as in the configuration files for french")
 
         skoscodesmappings.get("french") should equal (Some(SkoslangCodeMapping("french", "fr")))
 
-      Then("it should contain the same settings values as in the configuration files for portuguese")
+      And("it should contain the same settings values as in the configuration files for portuguese")
 
         skoscodesmappings.get("portuguese") should equal (Some(SkoslangCodeMapping("portuguese", "pt")))
 
     }
+
 
   }
 

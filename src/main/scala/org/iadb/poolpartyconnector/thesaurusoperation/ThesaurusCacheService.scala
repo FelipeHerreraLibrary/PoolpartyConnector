@@ -77,6 +77,7 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, name: St
 
 
   def this(systembean: ActorSystemSpringWrapperBean) = {
+
     this(systembean.getActorSystem)
   }
 
