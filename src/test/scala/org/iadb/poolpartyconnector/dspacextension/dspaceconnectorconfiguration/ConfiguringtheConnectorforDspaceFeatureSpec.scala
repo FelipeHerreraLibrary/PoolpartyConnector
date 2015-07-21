@@ -1,6 +1,6 @@
 package org.iadb.poolpartyconnector.dspacextension.dspaceconnectorconfiguration
 
-import org.iadb.poolpartyconnector.connectorconfiguration.PoolpartySettings
+import org.iadb.poolpartyconnector.connectorconfiguration.{CorpusScoringSettings, PoolpartySettings}
 import org.scalatest._
 
 /**
@@ -22,12 +22,13 @@ trait ConfigFixture extends BeforeAndAfterAll { this: Suite =>
 
   override def beforeAll() {
 
-    expectedConfdcfieldSettingsFixtVal     = FieldSettings("dc.subject", true, true, List("english", "spanish"), false, "http://thesaurus.iadb.org/publicthesauri/IdBTopics", "1DCDFC5D-3876-0001-EEE6-BC9C1B8016CF")
-    expectedConfauthorfieldSettingsfixtVal = FieldSettings("dc.contributor.author", false, false, List("english"), false, "http://thesaurus.iadb.org/publicthesauri/IdBAuthors", "1DCDFC5D-3876-0001-EEE6-BC9C1B8016CF")
+    expectedConfdcfieldSettingsFixtVal     = FieldSettings("dc.subject", true, true, List("english", "spanish"), false, "http://thesaurus.iadb.org/publicthesauri/IdBTopics", "1DCE2E49-7DD8-0001-524C-1A1B14A0141A", 7, 3)
+    expectedConfauthorfieldSettingsfixtVal = FieldSettings("dc.contributor.author", false, false, List("english"), false, "http://thesaurus.iadb.org/publicthesauri/IdBAuthors", "1DCE2E49-7DD8-0001-524C-1A1B14A0141A", 6, 2)
     loadedConnectorSettingsFixtVal         = DspaceDspacePoolPartyConnectorSettingImpl ("file:///Users/maatary/Dev/IdeaProjects/PoolpartyConnector/src/test/resources/poolpartydspace.conf")
 
-    expectedConfpoolpartySettingsFixedVal  = PoolpartySettings("http://127.0.0.1:8086","http://127.0.0.1:8086/PoolParty/api/thesaurus","http://127.0.0.1:8086/extractor/api/extract","1DCDFC5D-3876-0001-EEE6-BC9C1B8016CF",
-                                                               "http://thesaurus.iadb.org/publicthesauri","","")
+    expectedConfpoolpartySettingsFixedVal  = PoolpartySettings("http://127.0.0.1:8086","http://127.0.0.1:8086/PoolParty/api/thesaurus","http://127.0.0.1:8086/extractor/api/extract","1DCE2E49-7DD8-0001-524C-1A1B14A0141A",
+                                                               "http://thesaurus.iadb.org/publicthesauri","","", 60, 3,
+                                                               CorpusScoringSettings("corpus:25345917-e64e-4e84-9392-1ca2fd92c953", "corpus:3608d2c2-5d2c-45cc-8099-7668bd5ec8bf", "", ""))
 
     expectedconfigInfoFixtVal = """PoolPartyConnectorSettings : {
                                   |

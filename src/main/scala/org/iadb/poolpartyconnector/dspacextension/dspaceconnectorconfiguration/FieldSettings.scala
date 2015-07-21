@@ -7,10 +7,12 @@ package org.iadb.poolpartyconnector.dspacextension.dspaceconnectorconfiguration
  *
  */
 
-case class FieldSettings(fieldName          : String,
-                         hasTreeBrowser     : Boolean,
-                         isMultilanguage    : Boolean,
-                         languages          : List[String],
-                         isClosed           : Boolean,
-                         scheme             : String,
-                         poolpartyProjectId : String )
+case class FieldSettings(fieldName             : String,
+                         hasTreeBrowser        : Boolean,
+                         isMultilanguage       : Boolean,
+                         languages             : List[String],
+                         isClosed              : Boolean,
+                         scheme                : String,
+                         poolpartyProjectId    : String,
+                         maxConceptsExtraction : Int,
+                         maxTermsExtraction    : Int)

@@ -8,10 +8,18 @@ import org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation.
 
 /**
  * Created by Daniel Maatari Okouya on 6/6/15.
+ *
  */
 
+trait DspaceItemOperatorService {
 
-case class DspaceItemOperatorService(schemeMappingService: SchemeMetadatumMappingService) {
+  def updateItemMetadataWithRecommendedConcepts(itemWrapper : DspaceItemWrapper, poolpartyconceptresult: ConceptResults, lang: String = "en"): Item
+
+}
+
+
+
+case class DspaceItemOperatorServiceImpl (schemeMappingService: SchemeMetadatumMappingService) extends DspaceItemOperatorService {
 
 
 

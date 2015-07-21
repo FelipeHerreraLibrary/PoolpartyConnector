@@ -9,4 +9,7 @@ case class PoolpartySettings(apirootEndpoint:String,
                              coreProjectId: String,
                              coreThesaurusUri: String,
                              jelProjectId: String,
-                             jelThesaurusUri: String)
+                             jelThesaurusUri: String,
+                             maxConceptsExtractionPool: Int,
+                             maxTermsExtractionPool: Int,
+                             coprusSettings: CorpusScoringSettings)

@@ -2,6 +2,7 @@ package org.iadb.poolpartyconnector.thesaurusoperation
 
 import akka.actor.ActorSystem
 import akka.util.Timeout
+import org.iadb.poolpartyconnector.dspacextension.dspaceconnectorconfiguration.DspacePoolPartyConnectorSettings
 import org.iadb.poolpartyconnector.dspacextension.springadaptation.ActorSystemSpringWrapperBean
 import spray.json._
 import JsonProtocolSpecification.Concept
@@ -63,10 +64,13 @@ trait ThesaurusCacheService {
  * An Implementation of the CacheService for the PoolParty Thesaurus Server
  *
  */
-case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, name: String = "ThesaurusCacheServicePoolPartyImpl") extends  ThesaurusCacheService {
+case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connectorSettings: DspacePoolPartyConnectorSettings, name: String = "ThesaurusCacheServicePoolPartyImpl") extends  ThesaurusCacheService {
 
   implicit private val requestTimeout = Timeout(800 seconds)
   implicit private val system         = actorSystem
+
+  private val thesaurusapiEndpoint     = connectorSettings.poolpartyServerSettings.thesaurusapiEndpoint
+  private val coreProjectId           = connectorSettings.poolpartyServerSettings.coreProjectId
 
   //TODO support JelCode and Series
   var schemeList: List[String] =  List("http://thesaurus.iadb.org/publicthesauri/IdBTopics",
@@ -76,9 +80,9 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, name: St
                                        "http://thesaurus.iadb.org/publicthesauri/IdBAuthors")
 
 
-  def this(systembean: ActorSystemSpringWrapperBean) = {
+  def this(systemBean: ActorSystemSpringWrapperBean, connectorSettings: DspacePoolPartyConnectorSettings) = {
 
-    this(systembean.getActorSystem)
+    this(systemBean.getActorSystem, connectorSettings)
   }
 
   /**
@@ -131,7 +135,7 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, name: St
 
     val pipeline      = addCredentials(BasicHttpCredentials("superadmin", "poolparty")) ~> sendReceive
 
-    val request       = Get(s"http://127.0.0.1:8086/PoolParty/api/thesaurus/1DCDFC5D-3876-0001-EEE6-BC9C1B8016CF/concept?concept=$uri&language=$alang")
+    val request       = Get(s"$thesaurusapiEndpoint/$coreProjectId/concept?concept=$uri&language=$alang")
 
     val res           = pipeline(request)
 

@@ -3,7 +3,7 @@ package org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation
 import org.iadb.poolpartyconnector.conceptsrecommendation.JsonProtocolSpecification._
 import org.iadb.poolpartyconnector.dspacextension.dspaceconnectorconfiguration.{DspaceDspacePoolPartyConnectorSettingImpl, DspacePoolPartyConnectorSettings}
 import org.iadb.poolpartyconnector.dspacextension.dspacedatamodeladaptation.DspaceItemWrapper
-import org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation.dspaceitemoperation.DspaceItemOperatorService
+import org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation.dspaceitemoperation.DspaceItemOperatorServiceImpl
 import org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation.schememapping.{SchemeMetadatumMappingService, SchemeMetadatumMappingServiceImpl}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FeatureSpec, GivenWhenThen, Matchers}
@@ -41,7 +41,7 @@ class UpdatingItemWithRecommendedConceptsFeatureSpec extends FeatureSpec with Mo
 
         val loadedConnectorSettings   = DspaceDspacePoolPartyConnectorSettingImpl("file:///Users/maatary/Dev/IdeaProjects/PoolpartyConnector/src/test/resources/poolpartydspace.conf")
         val schemeMapping: SchemeMetadatumMappingService = SchemeMetadatumMappingServiceImpl(loadedConnectorSettings)
-        val dspaceItemOperatorService = DspaceItemOperatorService(schemeMapping)
+        val dspaceItemOperatorService = DspaceItemOperatorServiceImpl(schemeMapping)
 
 
 

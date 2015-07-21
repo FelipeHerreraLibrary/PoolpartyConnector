@@ -4,4 +4,14 @@ val list: List[Int] = map.flatMap(e => List(e._1)).toList
 
 Some(3).get
 
-None.getOrElse(null)
+//None.getOrElse(null)
+
+val list2: Option[Int] = None
+
+list2.getOrElse("hello")
+
+for (i <- list2) yield(i)
+
+1 eq map
+
+List(1,2,3,4).contains(map)

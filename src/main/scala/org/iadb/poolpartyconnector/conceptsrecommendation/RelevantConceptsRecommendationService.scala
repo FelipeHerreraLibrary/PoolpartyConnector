@@ -2,7 +2,7 @@ package org.iadb.poolpartyconnector.conceptsrecommendation
 
 
 
-import JsonProtocolSpecification.ConceptResults
+import org.iadb.poolpartyconnector.conceptsrecommendation.JsonProtocolSpecification.{Concept, Document, ConceptResults}
 import java.io.{InputStream}
 
 import akka.actor.ActorSystem
@@ -10,6 +10,8 @@ import akka.actor.ActorSystem
 import akka.util.Timeout
 
 import JsonProtocolSpecification.PoolPartyJsonProtocol._
+import org.iadb.poolpartyconnector.connectorconfiguration.CorpusScoringSettings
+import org.iadb.poolpartyconnector.dspacextension.dspaceconnectorconfiguration.DspacePoolPartyConnectorSettings
 import org.iadb.poolpartyconnector.dspacextension.springadaptation.ActorSystemSpringWrapperBean
 
 import org.iadb.poolpartyconnector.utils.TemporaryCopyUtils
@@ -39,19 +41,26 @@ trait RelevantConceptsRecommendationService {
  * Created by Daniel Maatari Okouya on 6/2/15.
  */
 
-case class RelevantConceptsRecommendationServicePoolPartyImpl(actorSystem: ActorSystem, name: String = "RelevantConceptsRecommendationService") extends RelevantConceptsRecommendationService {
+case class RelevantConceptsRecommendationServicePoolPartyImpl(actorSystem: ActorSystem, connectorSettings: DspacePoolPartyConnectorSettings, name: String = "RelevantConceptsRecommendationService") extends RelevantConceptsRecommendationService {
 
 
   implicit private val requestTimeout = Timeout(800 seconds)
   implicit private val system         = actorSystem
 
-
+  private val extratorapiEndpoint     = connectorSettings.poolpartyServerSettings.extratorapiEndpoint
+  private val coreProjectId           = connectorSettings.poolpartyServerSettings.coreProjectId
+  private val corpusSettings          = connectorSettings.poolpartyServerSettings.coprusSettings
+  private val numConceptsPool         = connectorSettings.poolpartyServerSettings.maxConceptsExtractionPool
+  private val numTermsPool            = connectorSettings.poolpartyServerSettings.maxTermsExtractionPool
+  private val fieldSettingsList       = connectorSettings.fieldsSettingsList
 
   //TODO Exception Handling
-  def this(systembean: ActorSystemSpringWrapperBean) = {
+  def this(systembean: ActorSystemSpringWrapperBean, connectorSettings: DspacePoolPartyConnectorSettings) = {
 
-    this(systembean.getActorSystem)
+    this(systembean.getActorSystem, connectorSettings)
   }
+
+
 
 
   /**
@@ -72,20 +81,21 @@ case class RelevantConceptsRecommendationServicePoolPartyImpl(actorSystem: Actor
 
     val payload       = MultipartFormData(Seq(BodyPart(tmpToClassify, "file", MediaTypes.`application/pdf`)))
 
-    //val request     = Post("http://thesaurus.iadb.org/extractor/api/extract?projectId=1DCE1C5E-6393-0001-F9FD-20401160CAC0&language=en", payload)
-    val request       = Post(s"http://127.0.0.1:8086/extractor/api/extract?projectId=1DCDFC5D-3876-0001-EEE6-BC9C1B8016CF&language=$lang", payload)
+    val corpus        = getCorpus(lang, corpusSettings)
+
+    val request       = Post(s"$extratorapiEndpoint?projectId=$coreProjectId&language=$lang&corpusScoring=$corpus&numberOfConcepts=$numConceptsPool&numberOfTerms=$numTermsPool", payload)
 
     val res           = pipeline(request)
 
 
-    //logResponseWithTime(res)
-
+    logResponseWithTime(res)
 
     val conceptResults = getConceptResultsFromFutureHttpResponse(res)
 
     TemporaryCopyUtils.deleteTemporaryCopy(tmpToClassify)
 
-    conceptResults
+    filterResultsWithExtractionSettings(conceptResults)
+
 
   }
 
@@ -136,8 +146,6 @@ case class RelevantConceptsRecommendationServicePoolPartyImpl(actorSystem: Actor
 
         val conceptResults = e.entity.data.asString.parseJson.convertTo[ConceptResults]
 
-        println(conceptResults.toString())
-
       }
 
       case Failure(e) => {
@@ -146,4 +154,53 @@ case class RelevantConceptsRecommendationServicePoolPartyImpl(actorSystem: Actor
     }
   }
 
+
+  def filterResultsWithExtractionSettings(conceptResults: ConceptResults): ConceptResults = {
+
+    import system.dispatcher
+
+    val mylist: Iterable[Future[List[Concept]]] = for (fieldSettings <- fieldSettingsList if fieldSettings.maxConceptsExtraction > 0; doc <- conceptResults.document; concepts <- doc.concepts) yield {
+
+
+
+       Future {
+         //println("in the future")
+         //println(concepts.toString())
+        // println(fieldSettings.toString())
+
+         val schemeFiltered = concepts.withFilter(e => e.conceptSchemes.exists(x => x.uri == fieldSettings.scheme)).flatMap(e=> List(e))
+
+         //println("List is filtered")
+
+         //println(schemeFiltered.toString())
+
+          schemeFiltered.size match {
+           case e if e > fieldSettings.maxConceptsExtraction => schemeFiltered.take(fieldSettings.maxConceptsExtraction)
+           case _ => schemeFiltered
+         }
+       }
+
+     }
+
+    val res = Await.result(Future.sequence(mylist), Duration.Inf).flatten.toList
+
+    val distinctRes = res.distinct
+
+    conceptResults.copy(document = Some(conceptResults.document.get.copy(concepts = Some(distinctRes))))
+
+  }
+
+  private def getCorpus(lang:String, corpusSettings: CorpusScoringSettings) = {
+
+    lang match {
+      case "en" => corpusSettings.corpusEN
+      case "es" => corpusSettings.corpusES
+      case "fr" => corpusSettings.corpusFR
+      case "pt" => corpusSettings.corpusPT
+      case _ => corpusSettings.corpusEN
+    }
+
+  }
 }
+
+

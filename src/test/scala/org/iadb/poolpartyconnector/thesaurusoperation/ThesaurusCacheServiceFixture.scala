@@ -8,7 +8,7 @@ import org.scalatest.{Suite,  BeforeAndAfterAll}
 trait ThesaurusCacheServiceFixture extends BeforeAndAfterAll {this: Suite =>
 
 
-  val cache: ThesaurusCacheService = ThesaurusCacheServiceModule.service
+  val cache: ThesaurusCacheService = ThesaurusServiceModuleTest.service
 
   override def beforeAll(): Unit = {
     super.beforeAll()
@@ -16,8 +16,6 @@ trait ThesaurusCacheServiceFixture extends BeforeAndAfterAll {this: Suite =>
 
 
   override def afterAll(): Unit = {
-
-    println("\n\n\n******ShutingDown: " + ThesaurusCacheServiceModule.system.toString + "*******\n\n\n")
 
     ThesaurusCacheServiceModule.system.shutdown()
     super.afterAll()
