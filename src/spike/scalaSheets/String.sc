@@ -38,3 +38,4 @@ def langfallbackifrequired(lang: String): String = {
 }
 
 langfallbackifrequired("*")
+

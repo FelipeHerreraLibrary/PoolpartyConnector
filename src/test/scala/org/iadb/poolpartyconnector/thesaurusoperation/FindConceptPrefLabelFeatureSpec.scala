@@ -81,6 +81,32 @@ class FindConceptPrefLabelFeatureSpec extends FeatureSpec with ThesaurusCacheSer
     }
 
 
+    scenario("The Prefered Label of an existing Concept in the JelCodes Thesaurus as opposed to the Core thesaurus") {
+
+
+      Given("the URI of an existing concept in the JelCodes Thesaurus")
+
+        info("uri = \"http://thesaurus.iadb.org/jelcodes/169145532077848423\", Language: \"en\", DefaultPrefLabel: \"Agricultural and Natural Resource Economics; Environmental and Ecological Economics\"")
+
+        val existingUri = "http://thesaurus.iadb.org/jelcodes/169145532077848423"
+        val lang = "en"
+        val defaultPrefLabel = "Agricultural and Natural Resource Economics; Environmental and Ecological Economics"
+        val service = cache
+
+
+      When("The URI is passed to the CacheService for Resolution with the language for which it does not have a label")
+
+        val prefLabel = service.getConceptPrefLabelWithDefaultLangfallback(existingUri, "en")
+
+
+      Then("it should return the Prefered Label in the default language  \"http://thesaurus.iadb.org/jelcodes/169145532077848423\"")
+
+        prefLabel should be (defaultPrefLabel)
+
+        println(s"the prefered label: $prefLabel")
+    }
+
+
   }
 
 }

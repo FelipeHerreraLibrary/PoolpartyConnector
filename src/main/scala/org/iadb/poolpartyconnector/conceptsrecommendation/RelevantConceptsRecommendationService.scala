@@ -79,7 +79,7 @@ case class RelevantConceptsRecommendationServicePoolPartyImpl(actorSystem: Actor
 
     val pipeline      = addCredentials(BasicHttpCredentials("superadmin", "poolparty")) ~> sendReceive
 
-    val payload       = MultipartFormData(Seq(BodyPart(tmpToClassify, "file", MediaTypes.`application/pdf`)))
+    val payload       = MultipartFormData(Seq(BodyPart(tmpToClassify, "file"/*,MediaTypes.`application/pdf`*/)))
 
     val corpus        = getCorpus(lang, corpusSettings)
 
@@ -88,7 +88,7 @@ case class RelevantConceptsRecommendationServicePoolPartyImpl(actorSystem: Actor
     val res           = pipeline(request)
 
 
-    logResponseWithTime(res)
+    //logResponseWithTime(res)
 
     val conceptResults = getConceptResultsFromFutureHttpResponse(res)
 
@@ -113,13 +113,17 @@ case class RelevantConceptsRecommendationServicePoolPartyImpl(actorSystem: Actor
 
     try {
 
-      val reponse = Await.result(res, Duration.Inf)
+      val response = Await.result(res, Duration.Inf)
 
-      reponse.entity.data.asString.parseJson.convertTo[ConceptResults]
+
+      response.status match {
+        case StatusCodes.OK => {if (response.entity.isEmpty) new ConceptResults(None, None)  else response.entity.data.asString.parseJson.convertTo[ConceptResults]}
+        case _ => {println("\n\nThe error response is: " + response.entity.asString + "\n\n" ) ; new ConceptResults(None, None)}
+      }
 
     }catch {
 
-      case e:Throwable => new ConceptResults(None, None)
+      case e:Throwable => {println(e.toString) ; new ConceptResults(None, None)}
       //TODO Add the possible throwable here: those of await result and log the error
     }
 
@@ -161,8 +165,6 @@ case class RelevantConceptsRecommendationServicePoolPartyImpl(actorSystem: Actor
 
     val mylist: Iterable[Future[List[Concept]]] = for (fieldSettings <- fieldSettingsList if fieldSettings.maxConceptsExtraction > 0; doc <- conceptResults.document; concepts <- doc.concepts) yield {
 
-
-
        Future {
          //println("in the future")
          //println(concepts.toString())
@@ -186,7 +188,10 @@ case class RelevantConceptsRecommendationServicePoolPartyImpl(actorSystem: Actor
 
     val distinctRes = res.distinct
 
-    conceptResults.copy(document = Some(conceptResults.document.get.copy(concepts = Some(distinctRes))))
+    conceptResults.document match {
+      case Some(e) => conceptResults.copy(document = Some(conceptResults.document.get.copy(concepts = Some(distinctRes))))
+      case None => conceptResults
+    }
 
   }
 

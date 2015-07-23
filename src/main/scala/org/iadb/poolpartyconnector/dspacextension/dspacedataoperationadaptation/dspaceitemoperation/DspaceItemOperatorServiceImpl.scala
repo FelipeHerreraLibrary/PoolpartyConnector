@@ -39,7 +39,8 @@ case class DspaceItemOperatorServiceImpl (schemeMappingService: SchemeMetadatumM
         conceptList foreach { concept =>
           val dsmetadata = getConceptInDspaceScheme(concept, Choices.CF_UNCERTAIN)
           //(schema: String, element: String, qualifier: String, lang: String, value: String, authority: String, confidence: Int)
-          itemWrapper.addMetadata(dsmetadata._1, dsmetadata._2, dsmetadata._3, dsmetadata._4, dsmetadata._5, dsmetadata._6, dsmetadata._7)
+          if (dsmetadata._1 != null && dsmetadata._2 != null)
+            itemWrapper.addMetadata(dsmetadata._1, dsmetadata._2, dsmetadata._3, dsmetadata._4, dsmetadata._5, dsmetadata._6, dsmetadata._7)
         }
       }
 
@@ -68,9 +69,12 @@ case class DspaceItemOperatorServiceImpl (schemeMappingService: SchemeMetadatumM
 
 
 
-    val dspaceMetadatum = schemeMappingService.getFieldsforScheme(concept.conceptSchemes.head.uri).head
+    //TODO Deal with the case where the metadatum contain None for ns or elt
+    val dspaceMetadatum = schemeMappingService.getMetadatumforScheme(concept.conceptSchemes.head.uri).head
 
-    (dspaceMetadatum.ns.get, dspaceMetadatum.elt.get, dspaceMetadatum.qual.getOrElse(null), concept.language, concept.uri, concept.uri, confidence)
+
+
+    (dspaceMetadatum.ns.getOrElse(null), dspaceMetadatum.elt.getOrElse(null), dspaceMetadatum.qual.getOrElse(null), concept.language, concept.uri, concept.uri, confidence)
     //(schema: String, element: String, qualifier: String, lang: String, value: String, authority: String, confidence: Int)
   }
 

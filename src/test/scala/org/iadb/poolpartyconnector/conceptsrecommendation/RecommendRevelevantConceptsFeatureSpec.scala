@@ -49,7 +49,7 @@ class RecommendRevelevantConceptsFeatureSpec extends FeatureSpec with Matchers w
 
         val loadedConnectorSettings = DspaceDspacePoolPartyConnectorSettingImpl ("file:///Users/maatary/Dev/IdeaProjects/PoolpartyConnector/src/test/resources/poolpartydspace.conf")
 
-        val in                      = Files.newInputStream(new File(getClass.getResource("/Health-Benefit-Plans.pdf").toURI).toPath)
+        val in                      = Files.newInputStream(new File(getClass.getResource("/Argentina_Construyendo_gobiernos_efectivos_Resumenes_ejecutivos_informes_nacionales.pdf").toURI).toPath)
 
         val RecommendationService   = new RelevantConceptsRecommendationServicePoolPartyImpl(system, loadedConnectorSettings)
 

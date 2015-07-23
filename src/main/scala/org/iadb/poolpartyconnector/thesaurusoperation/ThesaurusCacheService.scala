@@ -9,7 +9,7 @@ import JsonProtocolSpecification.Concept
 import JsonProtocolSpecification.JsonProtocol._
 
 import spray.client.pipelining._
-import spray.http.{HttpResponse, BasicHttpCredentials}
+import spray.http.{StatusCodes, HttpResponse, BasicHttpCredentials}
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 
@@ -69,9 +69,11 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
   implicit private val requestTimeout = Timeout(800 seconds)
   implicit private val system         = actorSystem
 
-  private val thesaurusapiEndpoint     = connectorSettings.poolpartyServerSettings.thesaurusapiEndpoint
+  private val thesaurusapiEndpoint    = connectorSettings.poolpartyServerSettings.thesaurusapiEndpoint
   private val coreProjectId           = connectorSettings.poolpartyServerSettings.coreProjectId
-
+  private val coreThesaurusUri        = connectorSettings.poolpartyServerSettings.coreThesaurusUri
+  private val jelProjectId            = connectorSettings.poolpartyServerSettings.jelProjectId
+  private val jelThesaurusUri         = connectorSettings.poolpartyServerSettings.jelThesaurusUri
   //TODO support JelCode and Series
   var schemeList: List[String] =  List("http://thesaurus.iadb.org/publicthesauri/IdBTopics",
                                        "http://thesaurus.iadb.org/publicthesauri/IdBDepartments",
@@ -135,7 +137,11 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
 
     val pipeline      = addCredentials(BasicHttpCredentials("superadmin", "poolparty")) ~> sendReceive
 
-    val request       = Get(s"$thesaurusapiEndpoint/$coreProjectId/concept?concept=$uri&language=$alang")
+
+    val request       = uri match {
+      case e if e.startsWith(coreThesaurusUri) => Get(s"$thesaurusapiEndpoint/$coreProjectId/concept?concept=$uri&language=$alang")
+      case e if e.startsWith(jelThesaurusUri)  => Get(s"$thesaurusapiEndpoint/$jelProjectId/concept?concept=$uri&language=$alang")
+    }
 
     val res           = pipeline(request)
 
@@ -161,23 +167,31 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
 
     try {
 
-      val reponse = Await.result(res, Duration.Inf)
+      val response = Await.result(res, Duration.Inf)
 
-      println("\n\n## " + reponse.entity.data.asString + "\n\n##")
+      response.status match {
 
-      Some(reponse.entity.data.asString.parseJson.convertTo[Concept])
+        case StatusCodes.OK => {
+
+                                if (response.entity.isEmpty)
+
+                                  None
+
+                                else {
+
+                                  println("\n\n## " + response.entity.data.asString + "\n\n##")
+
+                                  Some(response.entity.data.asString.parseJson.convertTo[Concept]);
+                                }
+        }
+
+        case _ => None
+      }
 
     }catch {
 
-      case e:Throwable => {
-
-        println(s"\n\n***\n\nError: \n$e\n\n***\n\n")
-
-        None
-      }
-
+      case e:Throwable => {println(s"\n\n***\n\nError: \n$e\n\n***\n\n"); None}
       //TODO Add the possible throwable here: those of await result and log the error
-
     }
 
   }

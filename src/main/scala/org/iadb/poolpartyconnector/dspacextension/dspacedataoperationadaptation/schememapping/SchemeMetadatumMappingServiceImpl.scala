@@ -6,7 +6,10 @@ import org.iadb.poolpartyconnector.dspacextension.dspacedatamodeladaptation.Dspa
 
 trait SchemeMetadatumMappingService {
 
-  def getFieldsforScheme(uri: String): List[DspaceMetadatum]
+  def mappsMetadatumWithName(toString: String): Boolean
+
+
+  def getMetadatumforScheme(uri: String): List[DspaceMetadatum]
 
 }
 
@@ -25,9 +28,16 @@ case class SchemeMetadatumMappingServiceImpl(connectorSettings: DspacePoolPartyC
 
 
 
-  override def getFieldsforScheme(uri: String): List[DspaceMetadatum] = {
+  override def getMetadatumforScheme(uri: String): List[DspaceMetadatum] = {
 
     fieldToschemeMap.withFilter(p => p._2 == uri).flatMap(e => List(DspaceMetadatum(e._1))).toList
+
+  }
+
+  override def mappsMetadatumWithName(metadatumName: String): Boolean = {
+
+    if (metadatumName == null || metadatumName.isEmpty) false
+    else fieldToschemeMap.contains(metadatumName)
 
   }
 }
