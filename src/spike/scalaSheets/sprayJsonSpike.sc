@@ -5,9 +5,6 @@ import JsonProtocolSpecification._
 import JsonProtocolSpecification.PoolPartyJsonProtocol._
 
 
-
-
-
 import spray.json._
 
 

@@ -26,7 +26,7 @@ class RecommendRevelevantConceptsFeatureSpec extends FeatureSpec with Matchers w
 
         val loadedConnectorSettings = DspaceDspacePoolPartyConnectorSettingImpl ("file:///Users/maatary/Dev/IdeaProjects/PoolpartyConnector/src/test/resources/poolpartydspace.conf")
 
-        val in                      = Files.newInputStream(new File(getClass.getResource("/UNWOMEN_surveyreport_ADVANCE_16Oct-short.pdf").toURI).toPath)
+        val in                      = Files.newInputStream(new File(getClass.getResource("/UNWOMEN_surveyreport_ADVANCE_16Oct.pdf").toURI).toPath)
 
         val RecommendationService   = new RelevantConceptsRecommendationServicePoolPartyImpl(system, loadedConnectorSettings)
 
@@ -49,7 +49,7 @@ class RecommendRevelevantConceptsFeatureSpec extends FeatureSpec with Matchers w
 
         val loadedConnectorSettings = DspaceDspacePoolPartyConnectorSettingImpl ("file:///Users/maatary/Dev/IdeaProjects/PoolpartyConnector/src/test/resources/poolpartydspace.conf")
 
-        val in                      = Files.newInputStream(new File(getClass.getResource("/Argentina_Construyendo_gobiernos_efectivos_Resumenes_ejecutivos_informes_nacionales.pdf").toURI).toPath)
+        val in                      = Files.newInputStream(new File(getClass.getResource("/2012 Annual Report - The Year in Review.pdf").toURI).toPath)
 
         val RecommendationService   = new RelevantConceptsRecommendationServicePoolPartyImpl(system, loadedConnectorSettings)
 
@@ -57,7 +57,7 @@ class RecommendRevelevantConceptsFeatureSpec extends FeatureSpec with Matchers w
 
       When("a document is submitted to the RecommendationService")
 
-        val recommendatedConcepts = RecommendationService.recommendMetadata(in)
+        val recommendatedConcepts = RecommendationService.recommendMetadata(in, "en")
         val conceptlist           = recommendatedConcepts.document.get.concepts.get
         val extractedfields       = loadedConnectorSettings.fieldsSettingsList.withFilter(e => e.maxConceptsExtraction > 0).flatMap(e=>List(e))
 

@@ -5,7 +5,7 @@ import akka.util.Timeout
 import org.iadb.poolpartyconnector.dspacextension.dspaceconnectorconfiguration.DspacePoolPartyConnectorSettings
 import org.iadb.poolpartyconnector.dspacextension.springadaptation.ActorSystemSpringWrapperBean
 import spray.json._
-import JsonProtocolSpecification.Concept
+import org.iadb.poolpartyconnector.thesaurusoperation.JsonProtocolSpecification.{Uri, SuggestFreeConcept, LanguageLiteral, Concept}
 import JsonProtocolSpecification.JsonProtocol._
 
 import spray.client.pipelining._
@@ -21,6 +21,9 @@ import scala.concurrent.duration._
  *
  */
 trait ThesaurusCacheService {
+
+  def createSuggestedFreeConcept(suggestedPrefLabel: String, lang: String, scheme: String, b: Boolean): String
+
 
   /**
    *  Find a Concept Prefered Label in the supplied Language otherwise its the Default Language
@@ -154,6 +157,69 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
 
 
 
+  override def createSuggestedFreeConcept(suggestedPrefLabel: String, lang: String, scheme: String, b: Boolean): String = {
+
+
+    import system.dispatcher
+
+    import spray.httpx.marshalling._
+    import spray.httpx.SprayJsonSupport._
+
+    val pipeline      = addCredentials(BasicHttpCredentials("superadmin", "poolparty")) ~> sendReceive
+
+
+    val label              = LanguageLiteral(suggestedPrefLabel, lang)
+    val suggestion         = SuggestFreeConcept(List(label), b, Some(List(Uri(scheme))), None, None,None, None)
+
+
+    val request            = Post(s"$thesaurusapiEndpoint/$coreProjectId/suggestFreeConcept", marshal(suggestion))
+
+    val res                = pipeline(request)
+
+    getSuggestedFromFutureHttpResponse(res) match {
+
+      case None => ""
+      case Some(e) => e
+
+    }
+  }
+
+
+  private def getSuggestedFromFutureHttpResponse(res: Future[HttpResponse]): Option[String] = {
+
+    try {
+
+      val response = Await.result(res, Duration.Inf)
+
+      response.status match {
+
+        case StatusCodes.OK => {
+
+          if (response.entity.isEmpty)
+
+            None
+
+          else {
+
+            println("\n\n## " + response.entity.data.asString + "\n\n##")
+
+            Some(response.entity.data.asString);
+          }
+        }
+
+        case _ => None
+
+    }
+  }catch {
+
+    case e:Throwable => {println(s"\n\n***\n\nError: \n$e\n\n***\n\n"); None}
+    //TODO Add the possible throwable here: those of await result and log the error
+  }
+
+  }
+
+
+
   /**
    *  Await for the future Http response to arrive
    *  Get the response or the error if any
@@ -206,5 +272,6 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
       case _ => "en"
     }
   }
+
 
 }
