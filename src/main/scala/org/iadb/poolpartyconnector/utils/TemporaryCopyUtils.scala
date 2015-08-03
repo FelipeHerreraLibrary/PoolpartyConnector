@@ -19,11 +19,8 @@ object TemporaryCopyUtils {
 
     val temporaryCopy = File.createTempFile("toClassify", null)
 
-    println("\n\nThe size of the temp file before:" + temporaryCopy.getFreeSpace + "\n\n")
+    Files.copy(stream, temporaryCopy.toPath, StandardCopyOption.REPLACE_EXISTING)
 
-    println("Number of Bytes written" + Files.copy(stream, temporaryCopy.toPath, StandardCopyOption.REPLACE_EXISTING))
-
-    println("\n\nThe size of the temp file after:" + temporaryCopy.getFreeSpace + "\n\n")
     temporaryCopy
 
   }
