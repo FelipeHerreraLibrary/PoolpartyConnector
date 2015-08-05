@@ -39,3 +39,9 @@ def langfallbackifrequired(lang: String): String = {
 
 langfallbackifrequired("*")
 
+"Bank Production and Developement".split(" ").map(e => e.capitalize).foldLeft("") {(a:String, b:String) => a + " " + b}.trim
+
+
+"Daniel".capitalize
+
+""
