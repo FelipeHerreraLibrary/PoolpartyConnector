@@ -10,7 +10,7 @@ import org.scalatest.{ Matchers, GivenWhenThen, FunSpec}
  *
  * Specification of the service that maps/convert between dspace metadata field and skos schemes
  */
-class SchemeMetadatumConversionSpec extends FunSpec with GivenWhenThen with Matchers {
+class SchemeMetadatumMappingSpec extends FunSpec with GivenWhenThen with Matchers {
 
 
 

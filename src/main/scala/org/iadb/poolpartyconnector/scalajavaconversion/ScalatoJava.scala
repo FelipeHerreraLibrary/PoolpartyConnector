@@ -14,6 +14,6 @@ object ScalatoJava {
 
   def  asJava[A,B](map: Map[A,B]): java.util.Map[A,B] = { map.asJava }
 
-  def  asJava[A](list: List[A]): java.util.Collection[A] = {list.asJavaCollection}
+  def  asJava[A](list: List[A]): java.util.List[A] = {list.asJava}
 
 }

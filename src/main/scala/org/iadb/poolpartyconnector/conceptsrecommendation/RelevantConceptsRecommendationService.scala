@@ -159,6 +159,7 @@ case class RelevantConceptsRecommendationServicePoolPartyImpl(actorSystem: Actor
   }
 
 
+
   def filterResultsWithExtractionSettings(conceptResults: ConceptResults): ConceptResults = {
 
     import system.dispatcher

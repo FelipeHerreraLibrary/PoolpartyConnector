@@ -20,3 +20,13 @@ val toZip = List("rene", "daniel", "okongua", "ikiya", "ibamba")
 
 
 theList.zip(toZip).map(e => Person(e._2, e._1.id))
+
+
+
+import scala.collection.JavaConverters._
+
+List(1,2,3,4).asJava
+
+
+
+List[Int]() map {e => e + 2 }

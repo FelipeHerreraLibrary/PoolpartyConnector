@@ -11,12 +11,12 @@ import scala.collection.JavaConverters._
 object JavatoScala {
 
 
-  def asScala[A](list: java.util.List[A]): List[A] = {
+  def asScala[A](list: java.util.Collection[A]): List[A] = {
     list.asScala.toList
   }
 
-  def asScala[A, B](map: java.util.Map[A, B]) = {
-    map.asScala
+  def asScala[A, B](map: java.util.Map[A, B]): Map[A, B] = {
+    map.asScala.toMap
   }
 
 

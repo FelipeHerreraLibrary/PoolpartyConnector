@@ -20,6 +20,7 @@ scalacOptions in ThisBuild ++= Seq("-language:postfixOps", "-feature")
 libraryDependencies ++=
   Seq("io.spray" %% "spray-client" % "1.3.3",
       "io.spray" %%  "spray-json" % "1.3.2",
+      "io.spray" %% "spray-caching" % "1.3.3",
       "com.typesafe.akka" %% "akka-actor" % "2.3.11",
       "org.dspace" % "dspace-api" % "1.8.2",
       "com.softwaremill.macwire" %% "macros" % "1.0.5",

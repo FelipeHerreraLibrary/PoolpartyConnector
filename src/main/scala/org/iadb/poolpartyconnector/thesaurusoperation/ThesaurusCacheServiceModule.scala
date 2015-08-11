@@ -10,6 +10,7 @@ import org.iadb.poolpartyconnector.dspacextension.dspaceconnectorconfiguration.D
  *
  * Usage: object ThesaurusCacheServiceModule extends ThesaurusCacheServiceModule
  */
+
 trait ThesaurusCacheServiceModule {
 
   import com.softwaremill.macwire._
