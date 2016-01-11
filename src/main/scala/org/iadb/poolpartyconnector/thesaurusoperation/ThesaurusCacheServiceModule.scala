@@ -15,10 +15,11 @@ trait ThesaurusCacheServiceModule {
 
   import com.softwaremill.macwire._
 
-  val loadedConnectorSettings   = DspaceDspacePoolPartyConnectorSettingImpl("file:///Users/maatary/Dev/IdeaProjects/PoolpartyConnector/src/test/resources/poolpartydspace.conf")
+  val loadedConnectorSettings  = DspaceDspacePoolPartyConnectorSettingImpl("file:///Users/maatary/Dev/IdeaProjects/PoolpartyConnector/src/test/resources/poolpartydspace.conf")
 
-  def system = ActorSystem()
-  def service: ThesaurusCacheService = wire[ThesaurusCacheServicePoolPartyImpl]
+  def system                                           = ActorSystem()
+  def thesaurusSparqlConsumer: ThesaurusSparqlConsumer = wire[ThesaurusSparqlConsumerJenaImpl]
+  def service: ThesaurusCacheService                   = wire[ThesaurusCacheServicePoolPartyImpl]
 
 }
 

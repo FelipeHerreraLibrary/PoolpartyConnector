@@ -1,31 +1,15 @@
+import org.iadb.poolpartyconnector.thesaurusoperation.ThesaurusSparqlConsumerJenaImpl
+import org.junit.internal.runners.statements.Fail
+import scala.util.{Failure, Try}
 
 
-  /* gets a SparqlEngine out of a Sparql endpoint */
+//println(ThesaurusSparqlConsumerJenaImpl().getEca("http://127.0.0.1:8086/PoolParty/sparql/publicthesauri", "http://thesaurus.iadb.org/publicthesauri/82451829792987269"))
 
-  val endpoint = new URL("http://dbpedia.org/sparql/")
+ThesaurusSparqlConsumerJenaImpl().
+  getConceptIndexableLabels("http://127.0.0.1:8086/PoolParty/sparql/publicthesauri", "http://thesaurus.iadb.org/publicthesauri/35199195070012766377107").
+  foreach(e => println(s"${e.label}@${e.language}"))
 
-  /* creates a Sparql Select query */
 
-  val query = parseSelect("""
-PREFIX ont: <http://dbpedia.org/ontology/>
-SELECT DISTINCT ?language WHERE {
- ?language a ont:ProgrammingLanguage .
- ?language ont:influencedBy ?other .
- ?other ont:influencedBy ?language .
-} LIMIT 100
-                          """).get
+/*val atry : Try[Int] = Failure(new Throwable("failed"))
+val atry2: Try[Int] = atry.map(e => e + 2)*/
 
-  /* executes the query */
-
-  val answers: Rdf#Solutions = endpoint.executeSelect(query).getOrFail()
-
-  /* iterate through the solutions */
-
-  val languages: Iterator[Rdf#URI] = answers.iterator map { row =>
-    /* row is an Rdf#Solution, we can get an Rdf#Node from the variable name */
-    /* both the #Rdf#Node projection and the transformation to Rdf#URI can fail in the Try type, hense the flatMap */
-    row("language").get.as[Rdf#URI].get
-  }
-
-  println(languages.to[List])
-}

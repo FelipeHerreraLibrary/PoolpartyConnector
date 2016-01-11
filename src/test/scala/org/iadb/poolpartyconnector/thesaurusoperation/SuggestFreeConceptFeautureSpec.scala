@@ -6,7 +6,7 @@ import org.scalatest.{Matchers, GivenWhenThen, FeatureSpec}
 /**
  * Created by Daniel Maatari Okouya on 8/2/15.
  */
-class SuggestFreeConceptFeautureSpec extends FeatureSpec with ThesaurusCacheServiceFixture with GivenWhenThen with Matchers {
+class SuggestFreeConceptFeautureSpec extends FeatureSpec with ThesaurusConsumerServiceFixture with GivenWhenThen with Matchers {
 
 
 
@@ -38,9 +38,12 @@ class SuggestFreeConceptFeautureSpec extends FeatureSpec with ThesaurusCacheServ
 
     }
 
-    scenario("A List of PreferedLabel in the default language (english) together with a scheme are provided such that to create suggested Concepts within that scheme:Concurent method") {
 
 
+
+    /*scenario("A List of PreferedLabel in the default language (english) together with a scheme are provided such that to create suggested Concepts within that scheme:Concurent method") {
+
+      pending
 
       Given("A new PrefLabel in english and a targeted scheme")
 
@@ -57,7 +60,7 @@ class SuggestFreeConceptFeautureSpec extends FeatureSpec with ThesaurusCacheServ
       Then("")
 
       suggestedCocneptUris should not contain("")
-    }
+    }*/
 
   }
 

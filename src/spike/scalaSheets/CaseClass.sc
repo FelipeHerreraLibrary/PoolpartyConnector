@@ -1,6 +1,24 @@
 case class DspaceMetadatum(ns: Option[String], elt: Option[String], qual: Option[String]) {
 
 
+  //Not acceptable
+  /*def this(metadatumName: String) = {
+
+    this(Some(""), Some(""), None)
+
+    metadatumName.split('.') match {
+
+      case Array(e1:String,e2:String, _*) => this(Some(e1), Some(e2), None)
+
+      //case 3 => this(Some(parts{0}), Some(parts{1}), Some(parts{2}))
+
+      case _ => this(None, None, None)
+
+    }
+
+  }*/
+
+
   override def toString = {
 
     this match {
@@ -39,3 +57,5 @@ object DspaceMetadatum {
 DspaceMetadatum(Some("dc"), Some("subject"), None)
 
 "dc. ".trim.split('.')
+
+//new DspaceMetadatum("")

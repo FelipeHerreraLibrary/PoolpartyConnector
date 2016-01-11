@@ -2,13 +2,14 @@ package org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation
 
 import org.dspace.content.DCValue
 import org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation.DspaceDcValueUtils
+import org.iadb.poolpartyconnector.thesaurusoperation.JsonProtocolSpecification.LanguageLiteral
 import org.scalactic.{Equality, Equivalence}
 import org.scalatest.{Matchers, GivenWhenThen, FunSpec}
 
 /**
  * Created by Daniel Maatari Okouya on 8/4/15.
  */
-class ConsumerOperationSpec extends FunSpec with GivenWhenThen with Matchers {
+class ThesaurusConsumerUtilOperationSpec extends FunSpec with GivenWhenThen with Matchers {
 
 
   /**
@@ -29,7 +30,8 @@ class ConsumerOperationSpec extends FunSpec with GivenWhenThen with Matchers {
 
   describe("The Dspace Consumer Util") {
 
-    describe ("when provided with a list of DC Value and corresponding URIs for Update") {
+    describe ("The Update the DCValue.Value of a List of DcValue with Uri from a List of Uris") {
+
 
       it("should return the List of DCValues updated with the Uris for their Value field") {
 
@@ -60,15 +62,47 @@ class ConsumerOperationSpec extends FunSpec with GivenWhenThen with Matchers {
               and contain (DspaceDcValueUtils.getDCValue("subject", null, "http://thesaurus.iadb.org/publicthesauri/6666", "en", "dc", "http://thesaurus.iadb.org/publicthesauri/6666", -2))
             )
 
+      }
+
+    }
 
 
+    describe("The Creation of a list of DCValue modeled after a DCValueBluePrint and a list of Language Literals for their Value and Language field") {
+
+      it("should return a list of DCValues modeled after the bluePrint for each language Literals.") {
+
+        info("The Language Literal shall provide the DcValue.Value and the DcValue.Language")
+
+
+          Given("A DCValue BluePrint and a List of Language Literals")
+
+            val languageLiterals = List(LanguageLiteral("label1", "en"), LanguageLiteral("label2", "es"), LanguageLiteral("label3", "en"))
+
+            val dcValueBluePrint = DspaceDcValueUtils.getDCValue("subject", null, "animal1", "en", "dc", null, 0);
+
+
+          When("When submitted to the The Dspace Thesaurus Consumer Util required Operation")
+
+            val NewDcValues = ConsumerUtil.createDcValues(dcValueBluePrint, languageLiterals)
+
+
+          Then("The size of the new DcValue List shall equal the size of the List of Language Literral")
+
+            NewDcValues.size should be (languageLiterals.size)
+
+          And("Each DcValue shall be modeled after the blueprint and one language literal for its value and language")
+
+            NewDcValues should contain allOf (
+              DspaceDcValueUtils.getDCValue("subject", null, "label1", "en", "dc", null, 0),
+              DspaceDcValueUtils.getDCValue("subject", null, "label2", "es", "dc", null, 0),
+              DspaceDcValueUtils.getDCValue("subject", null, "label3", "en", "dc", null, 0)
+              )
 
 
       }
 
 
     }
-
   }
 
 

@@ -1,4 +1,6 @@
 package org.iadb.poolpartyconnector.thesaurusoperation
+
+
 import spray.caching._
 
 import akka.actor.ActorSystem
@@ -10,7 +12,7 @@ import org.iadb.poolpartyconnector.thesaurusoperation.JsonProtocolSpecification.
 import JsonProtocolSpecification.JsonProtocol._
 
 import spray.client.pipelining._
-import spray.http.{StatusCodes, HttpResponse, BasicHttpCredentials}
+import spray.http._
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 
@@ -23,49 +25,35 @@ import scala.concurrent.duration._
  */
 trait ThesaurusCacheService {
 
+  def getAllLangPrefLabels(conceptUri: String): List[LanguageLiteral]
+
+
   def createSuggestedFreeConceptsConcurrent(suggestedPrefLabels: List[LanguageLiteral], scheme: String, checkDuplicates: Boolean): List[String]
 
 
   def createSuggestedFreeConcepts(suggestedPrefLabel: List[LanguageLiteral], scheme: String, checkDuplicates: Boolean): List[String]
 
 
-  /**
-   *  Find a Concept Prefered Label in the supplied Language otherwise its the Default Language
-   *
-   * @param uri
-   * @param lang
-   * @return
-   */
-
   def getConceptPrefLabelWithDefaultLangfallback(uri: String, lang: String): String
 
+  def getConceptPrefLabelWithDefaultLangfallbackFuture(uri: String, lang: String): Future[String]
 
-  /**
-   *  Find a Concept Prefered Label in the supplied Language
-   *
-   * @param uri
-   * @param lang
-   * @return
-   */
   def getPrefLabelforConcept(uri: String, lang:String = "en") : String
+
+
+  def getPrefLabelforConceptFuture(uri: String, lang:String = "en"): Future[String]
 
 
   def getPrefLabelsforConcepts(uris: List[String], lang:String = "en"): List[String]
 
 
-  /**
-   * Check if a specific Scheme is part of the ThesarusCacheService
-   *
-   * @param scheme
-   * @return
-   */
-  def isSchemeInCache(scheme: Option[String]): Boolean
+  def getIdbDocWebTopic(conceptUri: String): List[String]
+
+
+  def getIndexableLabels(conceptUri: String): List[LanguageLiteral]
+
+
 }
-
-
-
-
-
 
 
 
@@ -74,9 +62,9 @@ trait ThesaurusCacheService {
  * An Implementation of the CacheService for the PoolParty Thesaurus Server
  *
  */
-case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connectorSettings: DspacePoolPartyConnectorSettings, name: String = "ThesaurusCacheServicePoolPartyImpl") extends  ThesaurusCacheService {
+case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connectorSettings: DspacePoolPartyConnectorSettings, thesaurusSparqlConsumer: ThesaurusSparqlConsumer) extends  ThesaurusCacheService {
 
-  implicit private val requestTimeout = Timeout(800 seconds)
+  implicit private val requestTimeout = Timeout(60 seconds)
   implicit private val system         = actorSystem
 
   private val thesaurusapiEndpoint    = connectorSettings.poolpartyServerSettings.thesaurusapiEndpoint
@@ -84,44 +72,35 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
   private val coreThesaurusUri        = connectorSettings.poolpartyServerSettings.coreThesaurusUri
   private val jelProjectId            = connectorSettings.poolpartyServerSettings.jelProjectId
   private val jelThesaurusUri         = connectorSettings.poolpartyServerSettings.jelThesaurusUri
-  //TODO support JelCode and Series
+  private val apirootEndpoint         = connectorSettings.poolpartyServerSettings.apirootEndpoint
 
-  var schemeList: List[String] =  List("http://thesaurus.iadb.org/publicthesauri/IdBTopics",
-                                       "http://thesaurus.iadb.org/publicthesauri/IdBDepartments",
-                                       "http://thesaurus.iadb.org/publicthesauri/IdBInstitutions",
-                                       "http://thesaurus.iadb.org/publicthesauri/IdBCountries",
-                                       "http://thesaurus.iadb.org/publicthesauri/IdBAuthors")
+  //TODO: Move it to the configuration file
+  private val sparqlEndpoint          = apirootEndpoint + "/PoolParty/sparql/publicthesauri"
 
 
-  private val cache = lruCache[String]()
+  private val cache                   = lruCache[String]()
 
-  def lruCache[T](maxCapacity: Int = 500, initialCapacity: Int = 500, timeToLive: Duration = Duration.Inf, timeToIdle: Duration = Duration.Inf) = {
+
+
+  def this(systemBean: ActorSystemSpringWrapperBean, connectorSettings: DspacePoolPartyConnectorSettings, thesaurusSparqlConsumer: ThesaurusSparqlConsumer) = {
+
+    this(systemBean.getActorSystem, connectorSettings, thesaurusSparqlConsumer)
+  }
+
+  def this(systemBean: ActorSystemSpringWrapperBean, connectorSettings: DspacePoolPartyConnectorSettings) = {
+
+    this(systemBean.getActorSystem, connectorSettings, null)
+  }
+
+
+  private def lruCache[T](maxCapacity: Int = 2000, initialCapacity: Int = 2000, timeToLive: Duration = Duration.Inf, timeToIdle: Duration = Duration.Inf) = {
 
     new ExpiringLruCache[T](maxCapacity, initialCapacity, timeToLive, timeToIdle)
 
   }
 
-  def this(systemBean: ActorSystemSpringWrapperBean, connectorSettings: DspacePoolPartyConnectorSettings) = {
 
-    this(systemBean.getActorSystem, connectorSettings)
-  }
 
-  /**
-   *
-   * Check if a scheme is being Cached
-   *
-   * @param scheme The scheme we want to know if it is in the cache
-   * @return
-   */
-  override def isSchemeInCache(scheme: Option[String]): Boolean = {
-
-    scheme match {
-
-      case None => false
-      case Some(e) => schemeList.contains(e)
-    }
-
-  }
 
   /**
    *  Find a Concept Prefered Label in the supplied Language otherwise its the Default Language
@@ -131,15 +110,59 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
    * @return
    */
 
-  def getConceptPrefLabelWithDefaultLangfallback(uri: String, lang: String) = {
+  def getConceptPrefLabelWithDefaultLangfallback(uri: String, lang: String): String = {
 
-    getPrefLabelforConcept(uri, lang) match {
+    Await.result(getConceptPrefLabelWithDefaultLangfallbackFuture(uri, lang), Duration.Inf)
 
-      case e if e.isEmpty => getPrefLabelforConcept(uri, "en")
-      case e => e
+  }
 
+
+  /**
+    *  Find a Concept Prefered Label in the supplied Language otherwise its the Default Language
+    *  Returns a Future
+    *
+    * @param uri
+    * @param lang
+    * @return
+    */
+
+  def getConceptPrefLabelWithDefaultLangfallbackFuture(uri: String, lang: String):Future[String] = {
+    //TODO Optimize make a double call each time
+    import system.dispatcher
+
+    lang match {
+      case e if e == "en" => getPrefLabelforConceptFuture(uri, lang)
+      case _ => {
+        val expected = getPrefLabelforConceptFuture(uri, lang)
+        val fallback = getPrefLabelforConceptFuture(uri, "en")
+        expected withFilter(!_.isEmpty) recoverWith { case _ => fallback }
+      }
     }
 
+  }
+
+
+  /**
+    * Get the Preferred Labels of a list of concepts with fallBacks
+    *
+    * @param uris
+    * @param lang
+    * @return
+    */
+  override def getPrefLabelsforConcepts(uris: List[String], lang:String = "en"): List[String] = {
+
+    import system.dispatcher
+
+    val alang = getlangOrdefault(lang)
+
+    //val pipeline      = addCredentials(BasicHttpCredentials("superadmin", "poolparty")) ~> sendReceive
+
+    val futurePrefLabels = uris map { uri =>
+
+      getConceptPrefLabelWithDefaultLangfallbackFuture(uri: String, alang: String)
+
+    }
+    Await.result(Future.sequence(futurePrefLabels), Duration.Inf)
   }
 
   /**
@@ -152,10 +175,10 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
 
     import system.dispatcher
 
-    val initTime      = System.currentTimeMillis()
-    def time()        = System.currentTimeMillis()
+    //val initTime      = System.currentTimeMillis()
+    //def time()        = System.currentTimeMillis()
 
-    val myres = Await.result(cache (uri + lang) {
+    val myres = Await.result(/*cache (uri + lang) {
 
       val alang = getlangOrdefault(lang)
 
@@ -167,68 +190,86 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
         case e if e.startsWith(jelThesaurusUri)  => Get(s"$thesaurusapiEndpoint/$jelProjectId/concept?concept=$uri&language=$alang")
       }
 
+
       val res           = pipeline(request)
 
-      getConceptFromFutureHttpResponse(res) match {
-        case Some(e) => e.prefLabel
-        case _ => ""
-      }
-    }, Duration.Inf)
+      getFutureConceptFromFutureHttpResponse(res, request)
 
-    println( "\n\n\nThe fetching time: " + (time()-initTime) + "\n\n\n")
+    }*/
+      getPrefLabelforConceptFuture(uri, lang), Duration.Inf)
+
+    //println( "\n\n\nThe fetching time: " + (time()-initTime) + "\n\n\n")
     myres
 
   }
 
+
   /**
-   *  Await for the future Http response to arrive
-   *  Get the response or the error if any
-   *  Return the response as a ConceptResult Object
-   *  The Object is empty if there was an error
-   *
-   * @param res
-   * @return
-   */
-  private def getConceptFromFutureHttpResponse(res: Future[HttpResponse]): Option[Concept] = {
+    * Returns a future[String] that will eventually contain the label
+    *
+    * TODO Not saving empty value
+    * TODO If we get from the external call an empty value because the system was unavailble then we should retreive the local value else we fail
+    * @param uri
+    * @param lang
+    * @return
+    */
+  override def getPrefLabelforConceptFuture(uri: String, lang:String = "en"): Future[String] = {
 
-    try {
+    import system.dispatcher
 
-      val response = Await.result(res, Duration.Inf)
+    cache (uri + lang) {
 
-      response.status match {
+      val alang         = getlangOrdefault(lang)
+      val pipeline      = addCredentials(BasicHttpCredentials("superadmin", "poolparty")) ~> sendReceive
 
-        case StatusCodes.OK => {
-
-          if (response.entity.isEmpty)
-
-            None
-
-          else {
-
-            println("\n\n## " + response.entity.data.asString + "\n\n##")
-
-            Some(response.entity.data.asString.parseJson.convertTo[Concept]);
-          }
-        }
-
-        case _ => None
+      val request       = uri match {
+        case e if e.startsWith(coreThesaurusUri) => Get(s"$thesaurusapiEndpoint/$coreProjectId/concept?concept=$uri&language=$alang")
+        case e if e.startsWith(jelThesaurusUri)  => Get(s"$thesaurusapiEndpoint/$jelProjectId/concept?concept=$uri&language=$alang")
       }
 
-    }catch {
+      val res           = pipeline(request)
 
-      case e:Throwable => {println(s"\n\n***\n\nError: \n$e\n\n***\n\n"); None}
-      //TODO Add the possible throwable here: those of await result and log the error
+      getFutureConceptFromFutureHttpResponse(res, request)
+
+    } recoverWith {case _ => Future.successful("") }
+  }
+
+  /**
+    *  Await for the future Http response to arrive
+    *  Get the response or the error if any
+    *  Return the response as a ConceptResult Object
+    *  The Object is empty if there was an error
+    *
+    * @param res
+    * @return
+    */
+  private def getFutureConceptFromFutureHttpResponse(res: Future[HttpResponse], originalRequest: HttpRequest): Future[String] = {
+
+    import system.dispatcher
+
+    res withFilter(_.status == StatusCodes.OK) map {
+
+      case e if e.entity.isEmpty => {
+        println("\n\n## " + s"The Request ${originalRequest.uri} returned an Empty Result"  + "\n\n##")
+        ""
+      }
+
+      case e => {
+        //println("\n\n## " + e.entity.data.asString + "\n\n##")
+        e.entity.data.asString.parseJson.convertTo[Concept].prefLabel;
+      }
+    } recoverWith {
+      case t: Throwable =>  {
+        println(s"\n\n## " + s"The Request ${originalRequest.uri} failed with Throwable: ${t}" + "\n\n##")
+        Future.failed(t)
+      }
     }
 
   }
 
-  /**
-   * Get the Preferred Labels of a list of concepts
-   * @param uris
-   * @param lang
-   * @return
-   */
-  override def getPrefLabelsforConcepts(uris: List[String], lang:String = "en"): List[String] = {
+
+
+  /*override def getPrefLabelsforConcepts(uris: List[String], lang:String = "en"): List[String] = {
 
     import system.dispatcher
 
@@ -242,7 +283,7 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
         case e if e.startsWith(coreThesaurusUri) => Get(s"$thesaurusapiEndpoint/$coreProjectId/concept?concept=$uri&language=$alang")
         case e if e.startsWith(jelThesaurusUri)  => Get(s"$thesaurusapiEndpoint/$jelProjectId/concept?concept=$uri&language=$alang")
       }
-      pipeline(request)
+      pipeline(request) // Need a recover with here: filter and recover
     }
 
 
@@ -269,10 +310,12 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
 
     }
 
+  }*/
 
-  }
 
-  private def getConceptsFromFutureHttpResponses(ress: Future[List[HttpResponse]]): Option[List[Option[Concept]]] = {
+
+
+  /*private def getConceptsFromFutureHttpResponses(ress: Future[List[HttpResponse]]): Option[List[Option[Concept]]] = {
 
     try {
 
@@ -309,7 +352,7 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
 
 
   }
-
+*/
 
   /**
    * Non-concurent, slow methods: create one label after receiving the confirmation that the preceding has been created.
@@ -346,10 +389,42 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
 
     }
 
+  }
 
+  private def getSuggestedFromFutureHttpResponse(res: Future[HttpResponse]): Option[String] = {
 
+    try {
+
+      val response = Await.result(res, Duration.Inf)
+
+      response.status match {
+
+        case StatusCodes.OK => {
+
+          if (response.entity.isEmpty)
+
+            None
+
+          else {
+
+            println("\n\n## " + response.entity.data.asString + "\n\n##")
+
+            Some(response.entity.data.asString);
+          }
+        }
+
+        case _ => None
+
+      }
+    }
+    catch {
+
+      case e:Throwable => {println(s"\n\n***\n\nError: \n$e\n\n***\n\n"); None}
+      //TODO Add the possible throwable here: those of await result and log the error
+    }
 
   }
+
 
   /**
    * Create Multiple Suggested FreeConcept
@@ -377,7 +452,6 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
                               pipeline(request)
 
                          }
-
 
 
     getSuggestedsFromFutureHttpResponse(Future.sequence(ress)) match {
@@ -429,39 +503,7 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
   }
 
 
-  private def getSuggestedFromFutureHttpResponse(res: Future[HttpResponse]): Option[String] = {
 
-    try {
-
-      val response = Await.result(res, Duration.Inf)
-
-      response.status match {
-
-        case StatusCodes.OK => {
-
-          if (response.entity.isEmpty)
-
-            None
-
-          else {
-
-            println("\n\n## " + response.entity.data.asString + "\n\n##")
-
-            Some(response.entity.data.asString);
-          }
-        }
-
-        case _ => None
-
-      }
-    }
-    catch {
-
-    case e:Throwable => {println(s"\n\n***\n\nError: \n$e\n\n***\n\n"); None}
-    //TODO Add the possible throwable here: those of await result and log the error
-  }
-
-  }
 
 
 
@@ -474,6 +516,60 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
       case "pt" => "pt"
       case _ => "en"
     }
+  }
+
+
+
+  /*def getIdbDocWebTopic(uri: String): List[String] = {
+
+    import system.dispatcher
+    import spray.httpx.marshalling._
+    import spray.httpx.SprayJsonSupport._
+
+    val sparqlquery = """PREFIX skos:<http://www.w3.org/2004/02/skos/core#> SELECT ?eca {<http://thesaurus.iadb.org/publicthesauri/118176996326225017829154> skos:broaderTransitive ?via. ?via skos:topConceptOf <http://thesaurus.iadb.org/publicthesauri/IdBTopics>.?via <http://thesaurus.iadb.org/idbdoc/eca> ?eca } LIMIT 100""".stripMargin
+
+
+    val querymap = Map("query" -> sparqlquery, "content-type" -> "application/json")
+
+
+
+    val request       = Post("http://127.0.0.1:8086/PoolParty/sparql/publicthesauri", FormData(querymap))
+
+    val pipeline      =  sendReceive
+
+    val init = System.currentTimeMillis()
+
+    val res           = pipeline(request)
+
+    val result = Await.result(res, Duration.Inf)
+
+    println("\n\nThe sparql query time is: " + (System.currentTimeMillis() - init) + "\n\n")
+
+    println(result.entity.asString)
+
+  }*/
+
+  def getIdbDocWebTopic(conceptUri: String): List[String] = {
+
+    thesaurusSparqlConsumer.getEca(sparqlEndpoint, conceptUri)
+
+  }
+
+  /**
+    * Fetch the Semantic search label
+    *
+    * @param conceptUri
+    * @return
+    */
+  override def getIndexableLabels(conceptUri: String): List[LanguageLiteral] = {
+
+    thesaurusSparqlConsumer.getConceptIndexableLabels(sparqlEndpoint, conceptUri)
+  }
+
+  override def getAllLangPrefLabels(conceptUri: String): List[LanguageLiteral] = {
+
+    thesaurusSparqlConsumer.getConceptAllLangPrefLabels(sparqlEndpoint, conceptUri)
+
   }
 
 }
