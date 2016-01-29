@@ -56,6 +56,24 @@ trait ThesaurusSparqlConsumer extends RDFModule with RDFOpsModule with SparqlOps
 
   }
 
+  def isBroaderConcept(EndpointUri: String, maybeBroaderUri: String,  ConceptUri: String): Boolean = {
+
+    val endpoint = new URL(EndpointUri)
+
+    val query    = parseAsk(s"""
+                            PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+                            ASK
+                            {
+                              <$ConceptUri> skos:broader+  <$maybeBroaderUri> .
+                            }
+                            """).get
+
+
+    //TODO Try over Parselect, and log problems
+    endpoint.executeAsk(query).getOrElse(false)
+
+  }
+
 
   def getConceptIndexableLabels(EndpointUri: String, ConceptUri: String): List[LanguageLiteral] = {
 

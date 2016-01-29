@@ -30,3 +30,7 @@ List(1,2,3,4).asJava
 
 
 List[Int]() map {e => e + 2 }
+
+
+List(Some(1), None, Some(2))
+List(Some(1), None, Some(2)).flatten

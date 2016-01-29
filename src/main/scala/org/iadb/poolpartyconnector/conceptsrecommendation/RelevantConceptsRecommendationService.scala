@@ -13,11 +13,13 @@ import JsonProtocolSpecification.PoolPartyJsonProtocol._
 import org.iadb.poolpartyconnector.connectorconfiguration.CorpusScoringSettings
 import org.iadb.poolpartyconnector.dspacextension.dspaceconnectorconfiguration.DspacePoolPartyConnectorSettings
 import org.iadb.poolpartyconnector.dspacextension.springadaptation.ActorSystemSpringWrapperBean
+import org.iadb.poolpartyconnector.thesaurusoperation.ThesaurusSparqlConsumer
 
 import org.iadb.poolpartyconnector.utils.TemporaryCopyUtils
 import spray.client.pipelining._
 import spray.http._
 
+import scala.collection.generic.FilterMonadic
 import scala.concurrent.{ExecutionContext, Future, Await}
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
@@ -34,6 +36,8 @@ trait RelevantConceptsRecommendationService {
 
   def recommendMetadata(inputstream: InputStream, lang: String) : ConceptResults
 
+  def filterBroader(conceptList: List[Concept]) : List[Concept]
+
 }
 
 
@@ -41,7 +45,7 @@ trait RelevantConceptsRecommendationService {
  * Created by Daniel Maatari Okouya on 6/2/15.
  */
 
-case class RelevantConceptsRecommendationServicePoolPartyImpl(actorSystem: ActorSystem, connectorSettings: DspacePoolPartyConnectorSettings, name: String = "RelevantConceptsRecommendationService") extends RelevantConceptsRecommendationService {
+case class RelevantConceptsRecommendationServicePoolPartyImpl(actorSystem: ActorSystem, connectorSettings: DspacePoolPartyConnectorSettings, thesaurusSparqlConsumer: ThesaurusSparqlConsumer, name: String = "RelevantConceptsRecommendationService") extends RelevantConceptsRecommendationService {
 
 
   implicit private val requestTimeout = Timeout(800 seconds)
@@ -54,10 +58,15 @@ case class RelevantConceptsRecommendationServicePoolPartyImpl(actorSystem: Actor
   private val numTermsPool            = connectorSettings.poolpartyServerSettings.maxTermsExtractionPool
   private val fieldSettingsList       = connectorSettings.fieldsSettingsList
 
-  //TODO Exception Handling
-  def this(systembean: ActorSystemSpringWrapperBean, connectorSettings: DspacePoolPartyConnectorSettings) = {
+  private val apirootEndpoint         = connectorSettings.poolpartyServerSettings.apirootEndpoint
 
-    this(systembean.getActorSystem, connectorSettings)
+  //TODO: Move it to the configuration file
+  private val sparqlEndpoint          = apirootEndpoint + "/PoolParty/sparql/publicthesauri"
+
+  //TODO Exception Handling
+  def this(systembean: ActorSystemSpringWrapperBean, connectorSettings: DspacePoolPartyConnectorSettings, thesaurusSparqlConsumer: ThesaurusSparqlConsumer) = {
+
+    this(systembean.getActorSystem, connectorSettings, thesaurusSparqlConsumer)
   }
 
 
@@ -159,31 +168,28 @@ case class RelevantConceptsRecommendationServicePoolPartyImpl(actorSystem: Actor
   }
 
 
-
+  /**
+    *
+    * @param conceptResults
+    * @return
+    */
   def filterResultsWithExtractionSettings(conceptResults: ConceptResults): ConceptResults = {
 
     import system.dispatcher
 
     val mylist: Iterable[Future[List[Concept]]] = for (fieldSettings <- fieldSettingsList if fieldSettings.maxConceptsExtraction > 0; doc <- conceptResults.document; concepts <- doc.concepts) yield {
 
-       Future {
-         //println("in the future")
-         //println(concepts.toString())
-        // println(fieldSettings.toString())
+      Future {
 
-         val schemeFiltered = concepts.withFilter(e => e.conceptSchemes.exists(x => x.uri == fieldSettings.scheme)).flatMap(e=> List(e))
+        val schemeFiltered = concepts.filter(e => e.conceptSchemes.exists(x => x.uri == fieldSettings.scheme))/*.flatMap(e=> List(e))*/
 
-         //println("List is filtered")
+        schemeFiltered.size match {
+          case e if e > fieldSettings.maxConceptsExtraction => filterBroader(schemeFiltered).take(fieldSettings.maxConceptsExtraction)
+          case _ => schemeFiltered
+        }
+      }
 
-         //println(schemeFiltered.toString())
-
-          schemeFiltered.size match {
-           case e if e > fieldSettings.maxConceptsExtraction => schemeFiltered.take(fieldSettings.maxConceptsExtraction)
-           case _ => schemeFiltered
-         }
-       }
-
-     }
+    }
 
     val res = Await.result(Future.sequence(mylist), Duration.Inf).flatten.toList
 
@@ -195,6 +201,54 @@ case class RelevantConceptsRecommendationServicePoolPartyImpl(actorSystem: Actor
     }
 
   }
+
+  /**
+    * Filter out every concept that has a narrower concept in the list
+    * @param conceptList
+    * @return
+    */
+  def filterBroader(conceptList: List[Concept]) : List[Concept] = {
+
+    import system.dispatcher
+
+    val BroaderOrNoneList = conceptList.map{ maybeBroader =>
+      getIfNonBroaderOrNone(maybeBroader, conceptList)
+    }
+
+    Await.result(Future.sequence(BroaderOrNoneList), Duration.Inf).flatten
+
+  }
+
+  /**
+    *
+    * @param maybeBroader
+    * @param conceptList
+    * @return
+    */
+
+  private def getIfNonBroaderOrNone(maybeBroader: Concept, conceptList: List[Concept]): Future[Option[Concept]] = {
+    import system.dispatcher
+
+    (Future.find(conceptList.map { e => isBroderinList(maybeBroader, e)}) {_ == true}).map {
+      case Some(true) => None
+      case _ => Some(maybeBroader)
+    }  recoverWith {
+      case _ => Future.successful(Some(maybeBroader))
+    }
+
+  }
+
+
+  def isBroderinList(maybeBroader: Concept, concept: Concept): Future[Boolean] = {
+
+    import system.dispatcher
+
+    Future {thesaurusSparqlConsumer.isBroaderConcept(sparqlEndpoint, maybeBroader.uri, concept.uri)}
+
+
+  }
+
+
 
   private def getCorpus(lang:String, corpusSettings: CorpusScoringSettings) = {
 

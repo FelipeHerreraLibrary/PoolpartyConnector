@@ -3,7 +3,9 @@ package org.iadb.poolpartyconnector.conceptsrecommendation
 import java.io.File
 import java.nio.file.Files
 
+import org.iadb.poolpartyconnector.conceptsrecommendation.JsonProtocolSpecification.Concept
 import org.iadb.poolpartyconnector.dspacextension.dspaceconnectorconfiguration.{FieldSettings, DspaceDspacePoolPartyConnectorSettingImpl}
+import org.iadb.poolpartyconnector.thesaurusoperation.ThesaurusSparqlConsumerJenaImpl
 import org.scalatest.{Inspectors, FeatureSpec, Matchers, GivenWhenThen}
 import Inspectors._
 /**
@@ -18,7 +20,7 @@ class RecommendRevelevantConceptsFeatureSpec extends FeatureSpec with Matchers w
   feature("Extracting the Relevant Concepts of a document content") {
 
 
-    scenario("As the Client I want to make sure that if a valid well-known Content is submitted, the extraction in english returns at least one concept from the Taxonomy") {
+    /*scenario("As the Client I want to make sure that if a valid well-known Content is submitted, the extraction in english returns at least one concept from the Taxonomy") {
 
 
 
@@ -28,7 +30,7 @@ class RecommendRevelevantConceptsFeatureSpec extends FeatureSpec with Matchers w
 
         val in                      = Files.newInputStream(new File(getClass.getResource("/UNWOMEN_surveyreport_ADVANCE_16Oct.pdf").toURI).toPath)
 
-        val RecommendationService   = new RelevantConceptsRecommendationServicePoolPartyImpl(system, loadedConnectorSettings)
+        val RecommendationService   = new RelevantConceptsRecommendationServicePoolPartyImpl(system, loadedConnectorSettings, new ThesaurusSparqlConsumerJenaImpl())
 
 
       When("the content is submitted to the classification service for metadata recommendation")
@@ -54,7 +56,7 @@ class RecommendRevelevantConceptsFeatureSpec extends FeatureSpec with Matchers w
 
       val in                      = Files.newInputStream(new File(getClass.getResource("/UNWOMEN_surveyreport_ADVANCE_16Oct.pdf").toURI).toPath)
 
-      val RecommendationService   = new RelevantConceptsRecommendationServicePoolPartyImpl(system, loadedConnectorSettings)
+      val RecommendationService   = new RelevantConceptsRecommendationServicePoolPartyImpl(system, loadedConnectorSettings, new ThesaurusSparqlConsumerJenaImpl())
 
 
       When("the content is submitted to the classification service for metadata recommendation")
@@ -66,6 +68,41 @@ class RecommendRevelevantConceptsFeatureSpec extends FeatureSpec with Matchers w
 
       recommendatedConcepts.document should not be(None)
 
+
+    }*/
+
+
+    scenario("As a connector service client I want to filter out the broader concept of an extraction results.") {
+
+      Given("the following List of Concepts:")
+
+        val conceptList = List(
+
+          Concept("","http://thesaurus.iadb.org/publicthesauri/73471090677097457", 0, "Culture & Arts", "", "", List.empty, 0),
+          Concept("","http://thesaurus.iadb.org/publicthesauri/65681465830111029997471", 0, "Audit plans", "", "", List.empty, 0),
+          Concept("","http://thesaurus.iadb.org/publicthesauri/44991102408763910373036", 0, "Conditional cash transfers", "", "", List.empty, 0),
+          Concept("","http://thesaurus.iadb.org/publicthesauri/71823130014935379", 0, "Social Development", "", "", List.empty, 0)
+
+        )
+
+        val loadedConnectorSettings = DspaceDspacePoolPartyConnectorSettingImpl ("file:///Users/maatary/Dev/IdeaProjects/PoolpartyConnector/src/test/resources/poolpartydspace.conf")
+
+        val RecommendationService   = new RelevantConceptsRecommendationServicePoolPartyImpl(system, loadedConnectorSettings, new ThesaurusSparqlConsumerJenaImpl())
+
+
+
+      When("applying the broader filter on it")
+
+        val filteredConceptList = RecommendationService.filterBroader(conceptList)
+
+
+      Then("the resulted list should be ")
+
+        filteredConceptList should contain only (
+          Concept("","http://thesaurus.iadb.org/publicthesauri/73471090677097457", 0, "Culture & Arts", "", "", List.empty, 0),
+          Concept("","http://thesaurus.iadb.org/publicthesauri/65681465830111029997471", 0, "Audit plans", "", "", List.empty, 0),
+          Concept("","http://thesaurus.iadb.org/publicthesauri/44991102408763910373036", 0, "Conditional cash transfers", "", "", List.empty, 0)
+        )
 
     }
 
