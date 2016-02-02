@@ -8,7 +8,7 @@ import akka.util.Timeout
 import org.iadb.poolpartyconnector.dspacextension.dspaceconnectorconfiguration.DspacePoolPartyConnectorSettings
 import org.iadb.poolpartyconnector.dspacextension.springadaptation.ActorSystemSpringWrapperBean
 import spray.json._
-import org.iadb.poolpartyconnector.thesaurusoperation.JsonProtocolSpecification.{Uri, SuggestFreeConcept, LanguageLiteral, Concept}
+import org.iadb.poolpartyconnector.thesaurusoperation.JsonProtocolSpecification.{Uri, SuggestFreeConcept, LanguageLiteral, Concept, GenericConcept}
 import JsonProtocolSpecification.JsonProtocol._
 
 import spray.client.pipelining._
@@ -178,25 +178,7 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
     //val initTime      = System.currentTimeMillis()
     //def time()        = System.currentTimeMillis()
 
-    val myres = Await.result(/*cache (uri + lang) {
-
-      val alang = getlangOrdefault(lang)
-
-      val pipeline      = addCredentials(BasicHttpCredentials("superadmin", "poolparty")) ~> sendReceive
-
-
-      val request       = uri match {
-        case e if e.startsWith(coreThesaurusUri) => Get(s"$thesaurusapiEndpoint/$coreProjectId/concept?concept=$uri&language=$alang")
-        case e if e.startsWith(jelThesaurusUri)  => Get(s"$thesaurusapiEndpoint/$jelProjectId/concept?concept=$uri&language=$alang")
-      }
-
-
-      val res           = pipeline(request)
-
-      getFutureConceptFromFutureHttpResponse(res, request)
-
-    }*/
-      getPrefLabelforConceptFuture(uri, lang), Duration.Inf)
+    val myres = Await.result(getPrefLabelforConceptFuture(uri, lang), Duration.Inf)
 
     //println( "\n\n\nThe fetching time: " + (time()-initTime) + "\n\n\n")
     myres
@@ -223,13 +205,13 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
       val pipeline      = addCredentials(BasicHttpCredentials("superadmin", "poolparty")) ~> sendReceive
 
       val request       = uri match {
-        case e if e.startsWith(coreThesaurusUri) => Get(s"$thesaurusapiEndpoint/$coreProjectId/concept?concept=$uri&language=$alang")
-        case e if e.startsWith(jelThesaurusUri)  => Get(s"$thesaurusapiEndpoint/$jelProjectId/concept?concept=$uri&language=$alang")
+        case e if e.startsWith(coreThesaurusUri) => Get(s"$thesaurusapiEndpoint/$coreProjectId/getPropertyValues?resource=$uri&property=http://www.w3.org/2004/02/skos/core%23prefLabel")
+        case e if e.startsWith(jelThesaurusUri)  => Get(s"$thesaurusapiEndpoint/$jelProjectId/getPropertyValues?resource=$uri&property=http://www.w3.org/2004/02/skos/core%23prefLabel")
       }
 
       val res           = pipeline(request)
 
-      getFutureConceptFromFutureHttpResponse(res, request)
+      getFutureConceptFromFutureHttpResponse(res, request, lang)
 
     } recoverWith {case _ => Future.successful("") }
   }
@@ -243,7 +225,7 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
     * @param res
     * @return
     */
-  private def getFutureConceptFromFutureHttpResponse(res: Future[HttpResponse], originalRequest: HttpRequest): Future[String] = {
+  private def getFutureConceptFromFutureHttpResponse(res: Future[HttpResponse], originalRequest: HttpRequest, lang:String = "en"): Future[String] = {
 
     import system.dispatcher
 
@@ -256,7 +238,10 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
 
       case e => {
         //println("\n\n## " + e.entity.data.asString + "\n\n##")
-        e.entity.data.asString.parseJson.convertTo[Concept].prefLabel;
+        e.entity.data.asString.parseJson.convertTo[GenericConcept].values.filter(_.language == lang) match {
+          case e if e.isEmpty => {println("\n\n## " + s"The Request ${originalRequest.uri} returned an Empty Result"  + "\n\n##"); ""}
+          case e => e.head.label
+        }
       }
     } recoverWith {
       case t: Throwable =>  {
@@ -518,36 +503,6 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
     }
   }
 
-
-
-  /*def getIdbDocWebTopic(uri: String): List[String] = {
-
-    import system.dispatcher
-    import spray.httpx.marshalling._
-    import spray.httpx.SprayJsonSupport._
-
-    val sparqlquery = """PREFIX skos:<http://www.w3.org/2004/02/skos/core#> SELECT ?eca {<http://thesaurus.iadb.org/publicthesauri/118176996326225017829154> skos:broaderTransitive ?via. ?via skos:topConceptOf <http://thesaurus.iadb.org/publicthesauri/IdBTopics>.?via <http://thesaurus.iadb.org/idbdoc/eca> ?eca } LIMIT 100""".stripMargin
-
-
-    val querymap = Map("query" -> sparqlquery, "content-type" -> "application/json")
-
-
-
-    val request       = Post("http://127.0.0.1:8086/PoolParty/sparql/publicthesauri", FormData(querymap))
-
-    val pipeline      =  sendReceive
-
-    val init = System.currentTimeMillis()
-
-    val res           = pipeline(request)
-
-    val result = Await.result(res, Duration.Inf)
-
-    println("\n\nThe sparql query time is: " + (System.currentTimeMillis() - init) + "\n\n")
-
-    println(result.entity.asString)
-
-  }*/
 
   def getIdbDocWebTopic(conceptUri: String): List[String] = {
 

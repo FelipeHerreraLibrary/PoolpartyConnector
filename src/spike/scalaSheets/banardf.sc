@@ -12,6 +12,6 @@ import scala.util.{Failure, Try}
 val atry2: Try[Int] = atry.map(e => e + 2)*/
 
 ThesaurusSparqlConsumerJenaImpl().isBroaderConcept(
-  "http://127.0.0.1:8086/PoolParty/sparql/publicthesauri",
-  "http://thesaurus.iadb.org/publicthesauri/149109721920228247869246",
-  "http://thesaurus.iadb.org/publicthesauri/65681465830111029997471")
+  "http://thesaurus.iadb.org/PoolParty/sparql/publicthesauri",
+  "http://thesaurus.iadb.org/publicthesauri/5359760942722238",
+  "http://thesaurus.iadb.org/publicthesauri/208")

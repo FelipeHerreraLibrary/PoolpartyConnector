@@ -9,9 +9,14 @@ import spray.json.DefaultJsonProtocol
 object JsonProtocolSpecification {
 
 
+
   case class Concept(prefLabel: String, uri: String)
 
+  case class Uri(uri:String)
+
   case class LanguageLiteral(label: String, language: String)
+
+  case class GenericConcept(resource: Uri, property: Uri, values: List[LanguageLiteral])
 
   case class SuggestFreeConcept(prefLabels: List[LanguageLiteral],
                                 checkForDuplicates: Boolean,
@@ -20,7 +25,7 @@ object JsonProtocolSpecification {
                                 definition: Option[List[LanguageLiteral]],
                                 Note: Option[String],
                                 score:Option[Double])
-  case class Uri(uri:String)
+
 
   //case class SuggestedFreeConceptResult(uri: String)
 
@@ -31,7 +36,7 @@ object JsonProtocolSpecification {
     implicit val LanguageLiteralFormat    = jsonFormat2(LanguageLiteral)
     implicit val UriFormat                = jsonFormat1(Uri)
     implicit val SuggestFreeConceptFormat = jsonFormat7(SuggestFreeConcept)
-
+    implicit val GenericConceptFormat     = jsonFormat3(GenericConcept)
 
 
   }

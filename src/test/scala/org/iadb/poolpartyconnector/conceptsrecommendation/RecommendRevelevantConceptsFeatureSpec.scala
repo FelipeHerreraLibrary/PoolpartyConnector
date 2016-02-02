@@ -78,10 +78,11 @@ class RecommendRevelevantConceptsFeatureSpec extends FeatureSpec with Matchers w
 
         val conceptList = List(
 
-          Concept("","http://thesaurus.iadb.org/publicthesauri/73471090677097457", 0, "Culture & Arts", "", "", List.empty, 0),
-          Concept("","http://thesaurus.iadb.org/publicthesauri/65681465830111029997471", 0, "Audit plans", "", "", List.empty, 0),
+
+          Concept("","http://thesaurus.iadb.org/publicthesauri/6451619092373765", 0, "Economic Development & Growth", "", "", List.empty, 0),
           Concept("","http://thesaurus.iadb.org/publicthesauri/44991102408763910373036", 0, "Conditional cash transfers", "", "", List.empty, 0),
-          Concept("","http://thesaurus.iadb.org/publicthesauri/71823130014935379", 0, "Social Development", "", "", List.empty, 0)
+          Concept("","http://thesaurus.iadb.org/publicthesauri/71823130014935379", 0, "Social Development", "", "", List.empty, 0),
+          Concept("","http://thesaurus.iadb.org/publicthesauri/5359760942722238", 0, "Economics", "", "", List.empty, 0)
 
         )
 
@@ -99,8 +100,7 @@ class RecommendRevelevantConceptsFeatureSpec extends FeatureSpec with Matchers w
       Then("the resulted list should be ")
 
         filteredConceptList should contain only (
-          Concept("","http://thesaurus.iadb.org/publicthesauri/73471090677097457", 0, "Culture & Arts", "", "", List.empty, 0),
-          Concept("","http://thesaurus.iadb.org/publicthesauri/65681465830111029997471", 0, "Audit plans", "", "", List.empty, 0),
+          Concept("","http://thesaurus.iadb.org/publicthesauri/6451619092373765", 0, "Economic Development & Growth", "", "", List.empty, 0),
           Concept("","http://thesaurus.iadb.org/publicthesauri/44991102408763910373036", 0, "Conditional cash transfers", "", "", List.empty, 0)
         )
 

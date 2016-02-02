@@ -16,7 +16,7 @@ class FindConceptPrefLabelFeatureSpec extends FeatureSpec with ThesaurusConsumer
   feature("ThesaurusService Concept Prefered Label Resolution") {
 
 
-    /*scenario("A Uri that exists in the Thesaurus Server is supplied to the CacheService for Label Resolution") {
+    scenario("A Uri that exists in the Thesaurus Server is supplied to the CacheService for Label Resolution") {
 
 
       Given("An URI that exists in the Thesaurus Server and the CacheService")
@@ -82,11 +82,11 @@ class FindConceptPrefLabelFeatureSpec extends FeatureSpec with ThesaurusConsumer
       Then("it should return the Prefered Label  \"Sector privado\"")
 
         prefLabel should be (existingPrefLabel)
-    }*/
+    }
 
 
 
-   /*scenario("The Prefered Label of an existing Concept that does not exist in the Supplied Language. The Label of the Default Language is returned") {
+   scenario("The Prefered Label of an existing Concept that does not exist in the Supplied Language. The Label of the Default Language is returned") {
 
 
       Given("the URI of an existing concept and a language for which it does not have a Label")
@@ -139,7 +139,7 @@ class FindConceptPrefLabelFeatureSpec extends FeatureSpec with ThesaurusConsumer
       Then("it should return the Prefered Label in the default language  \"Energy & Mining\"")
 
         prefLabel should be (defaultPrefLabel)
-    }*/
+    }
 
 
     /*scenario("The Prefered Label of an existing Concept in the JelCodes Thesaurus as opposed to the Core thesaurus") {

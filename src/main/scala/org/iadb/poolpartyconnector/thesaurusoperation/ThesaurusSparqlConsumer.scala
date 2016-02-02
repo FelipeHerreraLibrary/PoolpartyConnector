@@ -40,7 +40,7 @@ trait ThesaurusSparqlConsumer extends RDFModule with RDFOpsModule with SparqlOps
                               }
                               UNION
                               {
-                                <$ConceptUri> skos:broaderTransitive ?concept .
+                                <$ConceptUri> skos:broader+ ?concept .
                                 ?concept skos:topConceptOf <http://thesaurus.iadb.org/publicthesauri/IdBTopics>.
                                 ?concept <http://thesaurus.iadb.org/idbdoc/idbdocmatch> ?webtopic
                               }
