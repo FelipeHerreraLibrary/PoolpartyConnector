@@ -72,7 +72,7 @@ class RecommendRevelevantConceptsFeatureSpec extends FeatureSpec with Matchers w
     }*/
 
 
-    scenario("As a connector service client I want to filter out the broader concept of an extraction results.") {
+    /*scenario("As a connector service client I want to filter out the broader concept of an extraction results.") {
 
       Given("the following List of Concepts:")
 
@@ -104,19 +104,19 @@ class RecommendRevelevantConceptsFeatureSpec extends FeatureSpec with Matchers w
           Concept("","http://thesaurus.iadb.org/publicthesauri/44991102408763910373036", 0, "Conditional cash transfers", "", "", List.empty, 0)
         )
 
-    }
+    }*/
 
 
 
-    /*scenario("As a connector service client I want to obtain an extraction results that conform to the configuration of the connector in terms of the number of concepts and terms to extract per fields.") {
+    scenario("As a connector service client I want to obtain an extraction results that conform to the configuration of the connector in terms of the number of concepts and terms to extract per fields.") {
 
       Given("a connector Recommendation Service initialized with the following connector Settings: ")
 
         val loadedConnectorSettings = DspaceDspacePoolPartyConnectorSettingImpl ("file:///Users/maatary/Dev/IdeaProjects/PoolpartyConnector/src/test/resources/poolpartydspace.conf")
 
-        val in                      = Files.newInputStream(new File(getClass.getResource("/UNWOMEN_surveyreport_ADVANCE_16Oct.pdf").toURI).toPath)
+        val in                      = Files.newInputStream(new File(getClass.getResource("/Resumen_EjecutivoCPEBRENGBRIK6.pdf").toURI).toPath)
 
-        val RecommendationService   = new RelevantConceptsRecommendationServicePoolPartyImpl(system, loadedConnectorSettings)
+        val RecommendationService   = new RelevantConceptsRecommendationServicePoolPartyImpl(system, loadedConnectorSettings, new ThesaurusSparqlConsumerJenaImpl())
 
 
 
@@ -135,7 +135,7 @@ class RecommendRevelevantConceptsFeatureSpec extends FeatureSpec with Matchers w
 
       conceptlist foreach{ e => println(e); println("----------------")}
 
-    }*/
+    }
 
   }
 }
