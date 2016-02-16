@@ -121,6 +121,107 @@ trait ThesaurusSparqlConsumer extends RDFModule with RDFOpsModule with SparqlOps
   }
 
 
+  def getAllLangBroaderLabels(EndpointUri: String, ConceptUri: String): List[LanguageLiteral] = {
+
+    val endpoint = new URL(EndpointUri)
+
+    val query    = parseSelect(s"""
+                            PREFIX skos:<http://www.w3.org/2004/02/skos/core#>
+                                  select ?indexableLabel
+                                  {
+                                    <$ConceptUri> skos:broader+ ?broader .
+
+                                    {
+                                      ?broader  skos:altLabel ?indexableLabel .
+                                    }
+                                    UNION
+                                    {
+                                      ?broader  skos:hiddenLabel ?indexableLabel .
+                                    }
+                                    UNION
+                                    {
+                                      ?broader skos:prefLabel ?indexableLabel .
+                                    }
+
+                                  }  LIMIT 100
+                            """).get
+
+
+
+    val answersTry: Try[Rdf#Solutions]        = endpoint.executeSelect(query)
+
+    val labelsTry: Try[Iterator[Rdf#Literal]] = answersTry map { answers => answers.iterator map { row => row("indexableLabel").get.as[Rdf#Literal].get }}
+
+    val languageLiteralTry = labelsTry map {languages => languages.toList map {e => LanguageLiteral(e.lexicalForm, e.lang.get.toString)}}
+
+    languageLiteralTry getOrElse List.empty
+
+  }
+
+
+  def getAllLangRelatedLabels(EndpointUri: String, ConceptUri: String): List[LanguageLiteral] = {
+
+    val endpoint = new URL(EndpointUri)
+
+    val query    = parseSelect(s"""
+                            PREFIX skos:<http://www.w3.org/2004/02/skos/core#>
+                                  select ?indexableLabel
+                                  {
+                                    <$ConceptUri> skos:related ?related .
+
+                                    {
+                                      ?related  skos:altLabel ?indexableLabel .
+                                    }
+                                    UNION
+                                    {
+                                      ?related  skos:hiddenLabel ?indexableLabel .
+                                    }
+                                    UNION
+                                    {
+                                      ?related skos:prefLabel ?indexableLabel .
+                                    }
+
+                                  }  LIMIT 100
+                            """).get
+
+
+
+    val answersTry: Try[Rdf#Solutions]        = endpoint.executeSelect(query)
+
+    val labelsTry: Try[Iterator[Rdf#Literal]] = answersTry map { answers => answers.iterator map { row => row("indexableLabel").get.as[Rdf#Literal].get }}
+
+    val languageLiteralTry = labelsTry map {languages => languages.toList map {e => LanguageLiteral(e.lexicalForm, e.lang.get.toString)}}
+
+    languageLiteralTry getOrElse List.empty
+
+  }
+
+
+  def getAllLangAltLabels(endpointUri: String, conceptUri: String): List[LanguageLiteral] = {
+
+    val endpoint = new URL(endpointUri)
+
+    val query    = parseSelect(s"""
+                            PREFIX skos:<http://www.w3.org/2004/02/skos/core#>
+                                  select ?label
+                                  {
+                                    <$conceptUri> skos:altLabel ?label .
+
+                                  }  LIMIT 100
+                            """).get
+
+
+    val answersTry: Try[Rdf#Solutions]        = endpoint.executeSelect(query)
+
+    val labelsTry: Try[Iterator[Rdf#Literal]] = answersTry map { answers => answers.iterator map { row => row("label").get.as[Rdf#Literal].get }}
+
+    val languageLiteralTry = labelsTry map {languages => languages.toList map {e => LanguageLiteral(e.lexicalForm, e.lang.get.toString)}}
+
+    languageLiteralTry getOrElse List.empty
+
+  }
+
+
   def getConceptAllLangPrefLabels(endpointUri: String, conceptUri: String): List[LanguageLiteral] = {
 
     val endpoint = new URL(endpointUri)

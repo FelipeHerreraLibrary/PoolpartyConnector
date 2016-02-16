@@ -25,7 +25,7 @@ import scala.concurrent.duration._
  */
 trait ThesaurusCacheService {
 
-  def getAllLangPrefLabels(conceptUri: String): List[LanguageLiteral]
+
 
 
   def createSuggestedFreeConceptsConcurrent(suggestedPrefLabels: List[LanguageLiteral], scheme: String, checkDuplicates: Boolean): List[String]
@@ -49,8 +49,16 @@ trait ThesaurusCacheService {
 
   def getIdbDocWebTopic(conceptUri: String): List[String]
 
+  def getAllLangPrefLabels(conceptUri: String): List[LanguageLiteral]
 
   def getIndexableLabels(conceptUri: String): List[LanguageLiteral]
+
+  def getBroaderLabels(conceptUri: String): List[LanguageLiteral]
+
+  def getRelatedLabels(conceptUri: String): List[LanguageLiteral]
+
+  def getAltLabels(conceptUri: String): List[LanguageLiteral]
+
 
 
 }
@@ -511,20 +519,37 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
   }
 
   /**
-    * Fetch the Semantic search label
+    * Fetch All the Semantic search label
     *
     * @param conceptUri
     * @return
     */
-  override def getIndexableLabels(conceptUri: String): List[LanguageLiteral] = {
+  def getIndexableLabels(conceptUri: String): List[LanguageLiteral] = {
 
     thesaurusSparqlConsumer.getConceptIndexableLabels(sparqlEndpoint, conceptUri)
   }
 
-  override def getAllLangPrefLabels(conceptUri: String): List[LanguageLiteral] = {
+  def getAllLangPrefLabels(conceptUri: String): List[LanguageLiteral] = {
 
     thesaurusSparqlConsumer.getConceptAllLangPrefLabels(sparqlEndpoint, conceptUri)
 
   }
 
+   def getBroaderLabels(conceptUri: String): List[LanguageLiteral] = {
+
+    thesaurusSparqlConsumer.getAllLangBroaderLabels(sparqlEndpoint, conceptUri)
+
+  }
+
+  def getRelatedLabels(conceptUri: String): List[LanguageLiteral] = {
+
+    thesaurusSparqlConsumer.getAllLangRelatedLabels(sparqlEndpoint, conceptUri)
+
+  }
+
+  def getAltLabels(conceptUri: String): List[LanguageLiteral] = {
+
+    thesaurusSparqlConsumer.getAllLangAltLabels(sparqlEndpoint, conceptUri)
+
+  }
 }
