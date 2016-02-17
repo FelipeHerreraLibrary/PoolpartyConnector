@@ -184,8 +184,14 @@ case class RelevantConceptsRecommendationServicePoolPartyImpl(actorSystem: Actor
         val schemeFiltered = concepts.filter(e => e.conceptSchemes.exists(x => x.uri == fieldSettings.scheme))
 
         schemeFiltered.size match {
-          case e if e > fieldSettings.maxConceptsExtraction => if (fieldSettings.fieldName == "dc.subject") filterBroader(schemeFiltered).take(fieldSettings.maxConceptsExtraction) else schemeFiltered.take(fieldSettings.maxConceptsExtraction)
-          case _ => if (fieldSettings.fieldName == "dc.subject" ) filterBroader(schemeFiltered) else schemeFiltered
+          case e if e > fieldSettings.maxConceptsExtraction => {
+            if (fieldSettings.fieldName == "dc.subject" || fieldSettings.fieldName == "iadb.department" )
+              filterBroader(schemeFiltered).take(fieldSettings.maxConceptsExtraction) else schemeFiltered.take(fieldSettings.maxConceptsExtraction)
+          }
+          case _ => {
+            if (fieldSettings.fieldName == "dc.subject" || fieldSettings.fieldName == "iadb.department" )
+              filterBroader(schemeFiltered) else schemeFiltered
+          }
         }
       }
 
