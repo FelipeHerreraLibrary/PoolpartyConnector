@@ -27,6 +27,29 @@ trait ThesaurusSparqlConsumer extends RDFModule with RDFOpsModule with SparqlOps
   import sparqlHttp.sparqlEngineSyntax._
 
 
+
+  def getRepecId(endpointUri: String, conceptUri: Any): List[String] = {
+
+    val endpoint = new URL(endpointUri)
+
+    val query    = parseSelect(s"""
+                            PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+                            SELECT DISTINCT ?repecid
+                            where {
+                              <$conceptUri> <http://thesaurus.iadb.org/repec/repecid> ?repecid
+                            } LIMIT 1
+                            """).get
+
+    //TODO Try over Parselect, and log problems
+    val answersTry: Try[Rdf#Solutions] = endpoint.executeSelect(query)
+
+    val topicsTry: Try[Iterator[Rdf#Literal]]  = answersTry map { answers => answers.iterator map { row => row("repecid").get.as[Rdf#Literal].get } }
+
+    topicsTry map {topics => topics.toList map {e => e.lexicalForm} } getOrElse List.empty
+
+  }
+
+
   def getEca(EndpointUri: String, ConceptUri: String): List[String] = {
 
     val endpoint = new URL(EndpointUri)

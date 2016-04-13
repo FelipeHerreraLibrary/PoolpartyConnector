@@ -1,6 +1,11 @@
 import org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation.authoritykeyoperation.AuthorityKeyUtils
 import org.iadb.poolpartyconnector.utils.ConceptUriChecker
 
+
+
+
+
+
 case class Value(authority: String)
 
 val value = Value("9f55bb73-f60e-49bc-83f7-20bc87b452c6")
