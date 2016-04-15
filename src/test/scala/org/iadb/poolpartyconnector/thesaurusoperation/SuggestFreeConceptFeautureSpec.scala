@@ -21,7 +21,7 @@ class SuggestFreeConceptFeautureSpec extends FeatureSpec with ThesaurusConsumerS
 
       Given("A new PrefLabel in english and a targeted scheme")
 
-        val suggestedPrefLabels = List(LanguageLiteral("suggested01", "en"), LanguageLiteral("suggested02", "en"), LanguageLiteral("suggested03", "en"), LanguageLiteral("suggested04", "en"))
+        val suggestedPrefLabels = List(LanguageLiteral("suggested01", "en"))
         val lang = "en"
         val scheme = "http://thesaurus.iadb.org/publicthesauri/IdBTopics"
         val service = cache

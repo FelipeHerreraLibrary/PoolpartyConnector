@@ -1,18 +1,19 @@
 package org.iadb.poolpartyconnector.thesaurusoperation
 
 
-import spray.caching._
+import javax.swing.plaf.BorderUIResource.EmptyBorderUIResource
 
+import spray.caching._
 import akka.actor.ActorSystem
 import akka.util.Timeout
 import org.iadb.poolpartyconnector.dspacextension.dspaceconnectorconfiguration.DspacePoolPartyConnectorSettings
 import org.iadb.poolpartyconnector.dspacextension.springadaptation.ActorSystemSpringWrapperBean
 import spray.json._
-import org.iadb.poolpartyconnector.thesaurusoperation.JsonProtocolSpecification.{Uri, SuggestFreeConcept, LanguageLiteral, Concept, GenericConcept}
+import org.iadb.poolpartyconnector.thesaurusoperation.JsonProtocolSpecification.{Concept, GenericConcept, LanguageLiteral, SuggestFreeConcept, Uri}
 import JsonProtocolSpecification.JsonProtocol._
-
 import spray.client.pipelining._
 import spray.http._
+
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 
@@ -24,8 +25,7 @@ import scala.concurrent.duration._
  *
  */
 trait ThesaurusCacheService {
-
-
+  def getauthorRepecId(authorUri: String): String
 
 
   def createSuggestedFreeConceptsConcurrent(suggestedPrefLabels: List[LanguageLiteral], scheme: String, checkDuplicates: Boolean): List[String]
@@ -175,7 +175,8 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
 
   /**
    * Get the preferred label of a concept
-   * @param uri
+    *
+    * @param uri
    * @param lang
    * @return
    */
@@ -199,6 +200,7 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
     *
     * TODO Not saving empty value
     * TODO If we get from the external call an empty value because the system was unavailble then we should retreive the local value else we fail
+    *
     * @param uri
     * @param lang
     * @return
@@ -366,7 +368,7 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
     val pipeline      = addCredentials(BasicHttpCredentials("superadmin", "poolparty")) ~> sendReceive
 
 
-    suggestedPrefLabels map { suggestedPrefLabel =>
+    val suggestedRes  = suggestedPrefLabels map { suggestedPrefLabel =>
 
       val suggestion    = SuggestFreeConcept(List(suggestedPrefLabel), checkDuplicates, Some(List(Uri(scheme))), None, None, None, None)
       val request       = Post(s"$thesaurusapiEndpoint/$coreProjectId/suggestFreeConcept", marshal(suggestion))
@@ -381,6 +383,10 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
       }
 
     }
+
+    val snapRes = Await.result(pipeline(Post(s"$apirootEndpoint/PoolParty/api/projects/${coreProjectId}/snapshot")), Duration.Inf)
+
+    suggestedRes
 
   }
 
@@ -421,7 +427,8 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
 
   /**
    * Create Multiple Suggested FreeConcept
-   * @param suggestedPrefLabels
+    *
+    * @param suggestedPrefLabels
    * @param scheme
    * @param checkDuplicates
    * @return
@@ -550,6 +557,15 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
   def getAltLabels(conceptUri: String): List[LanguageLiteral] = {
 
     thesaurusSparqlConsumer.getAllLangAltLabels(sparqlEndpoint, conceptUri)
+
+  }
+
+  override def getauthorRepecId(authorUri: String): String = {
+
+    thesaurusSparqlConsumer.getRepecId(sparqlEndpoint, authorUri) match {
+      case head::Nil => head
+      case _ => ""
+    }
 
   }
 }
