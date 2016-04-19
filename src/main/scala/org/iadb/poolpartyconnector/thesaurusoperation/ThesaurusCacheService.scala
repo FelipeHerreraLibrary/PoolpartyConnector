@@ -81,6 +81,7 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
   private val jelProjectId            = connectorSettings.poolpartyServerSettings.jelProjectId
   private val jelThesaurusUri         = connectorSettings.poolpartyServerSettings.jelThesaurusUri
   private val apirootEndpoint         = connectorSettings.poolpartyServerSettings.apirootEndpoint
+  private val fieldsettingsMap        = connectorSettings.fieldsSettingsMap
 
   //TODO: Move it to the configuration file
   private val sparqlEndpoint          = apirootEndpoint + "/PoolParty/sparql/publicthesauri"
@@ -367,12 +368,22 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
 
     val pipeline      = addCredentials(BasicHttpCredentials("superadmin", "poolparty")) ~> sendReceive
 
-
     val suggestedRes  = suggestedPrefLabels map { suggestedPrefLabel =>
 
-      val suggestion    = SuggestFreeConcept(List(suggestedPrefLabel), checkDuplicates, Some(List(Uri(scheme))), None, None, None, None)
-      val request       = Post(s"$thesaurusapiEndpoint/$coreProjectId/suggestFreeConcept", marshal(suggestion))
 
+      val suggestion  = if (scheme == fieldsettingsMap("dc.contributor.author").scheme)
+
+        SuggestFreeConcept(
+          List(suggestedPrefLabel, suggestedPrefLabel.copy(language = "es"),
+          suggestedPrefLabel.copy(language = "fr"),
+          suggestedPrefLabel.copy(language = "pt")),
+          checkDuplicates, Some(List(Uri(scheme))), None, None, None, None)
+
+      else
+
+        SuggestFreeConcept(List(suggestedPrefLabel), checkDuplicates, Some(List(Uri(scheme))), None, None, None, None)
+
+      val request       = Post(s"$thesaurusapiEndpoint/$coreProjectId/suggestFreeConcept", marshal(suggestion))
       val res           = pipeline(request)
 
       getSuggestedFromFutureHttpResponse(res) match {
@@ -384,7 +395,7 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
 
     }
 
-    val snapRes = Await.result(pipeline(Post(s"$apirootEndpoint/PoolParty/api/projects/${coreProjectId}/snapshot")), Duration.Inf)
+    pipeline(Post(s"$apirootEndpoint/PoolParty/api/projects/${coreProjectId}/snapshot"))
 
     suggestedRes
 

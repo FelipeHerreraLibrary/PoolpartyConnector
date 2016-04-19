@@ -15,7 +15,7 @@ class SuggestFreeConceptFeautureSpec extends FeatureSpec with ThesaurusConsumerS
 
 
 
-    scenario("A List of PreferedLabel in the default language (english) together with a scheme are provided such that to create suggested Concepts within that scheme") {
+    /*scenario("A List of PreferedLabel in the default language (english) together with a scheme are provided such that to create suggested Concepts within that scheme") {
 
 
 
@@ -36,7 +36,32 @@ class SuggestFreeConceptFeautureSpec extends FeatureSpec with ThesaurusConsumerS
         suggestedCocneptUris should not contain("")
 
 
+    }*/
+
+    scenario("A List of PreferedLabel in the default language (english) together with a scheme are provided such that to create suggested Concepts within that scheme") {
+
+
+
+      Given("A new PrefLabel in english and a targeted scheme")
+
+        val suggestedPrefLabels = List(LanguageLiteral("DanyDan Okouya", "en"))
+        val lang = "en"
+        val scheme = "http://thesaurus.iadb.org/publicthesauri/IdBAuthors"
+        val service = cache
+
+      When("")
+
+        val suggestedCocneptUris = service.createSuggestedFreeConcepts(suggestedPrefLabels, scheme, false)
+
+
+      Then("")
+
+        suggestedCocneptUris should not contain("")
+
+
     }
+
+
 
 
 
