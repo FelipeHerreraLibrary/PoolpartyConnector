@@ -66,7 +66,7 @@ case class RelevantConceptsRecommendationServicePoolPartyImpl(actorSystem: Actor
   //TODO Exception Handling
   def this(systembean: ActorSystemSpringWrapperBean, connectorSettings: DspacePoolPartyConnectorSettings, thesaurusSparqlConsumer: ThesaurusSparqlConsumer) = {
 
-    this(systembean.getActorSystem, connectorSettings, thesaurusSparqlConsumer)
+    this(systembean.system, connectorSettings, thesaurusSparqlConsumer)
   }
 
 

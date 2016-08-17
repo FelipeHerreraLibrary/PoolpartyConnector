@@ -22,13 +22,14 @@ trait ConfigFixture extends BeforeAndAfterAll { this: Suite =>
 
   override def beforeAll() {
 
-    expectedConfdcfieldSettingsFixtVal     = FieldSettings("dc.subject", true, true, List("english", "spanish"), false, "http://thesaurus.iadb.org/publicthesauri/IdBTopics", "1DCE4A2B-1F43-0001-B54C-1F2015001F4B", 10, 3)
-    expectedConfauthorfieldSettingsfixtVal = FieldSettings("dc.contributor.author", false, false, List("english"), false, "http://thesaurus.iadb.org/publicthesauri/IdBAuthors", "1DCE4A2B-1F43-0001-B54C-1F2015001F4B", 6, 2)
     loadedConnectorSettingsFixtVal         = DspaceDspacePoolPartyConnectorSettingImpl ("file:///Users/maatary/Dev/IdeaProjects/PoolpartyConnector/src/test/resources/poolpartydspace.conf")
 
-    expectedConfpoolpartySettingsFixedVal  = PoolpartySettings("http://127.0.0.1:8086","http://127.0.0.1:8086/PoolParty/api/thesaurus","http://127.0.0.1:8086/extractor/api/extract","1DCE4A2B-1F43-0001-B54C-1F2015001F4B",
-                                                               "http://thesaurus.iadb.org/publicthesauri","1DCE5A8E-25DA-0001-AB36-11DD12701707","http://thesaurus.iadb.org/jelcodes", 100, 3,
-                                                               CorpusScoringSettings("corpus:df58f8fc-08d0-4cc0-ba46-e9e1149dfcf5", "corpus:e515ab1d-fd34-4c2e-9a33-11ecf9a670d5", "", ""))
+    expectedConfdcfieldSettingsFixtVal     = FieldSettings("dc.subject", true, true, List("english", "spanish"), false, "http://thesaurus.iadb.org/publicthesauri/IdBTopics", "1DDF899F-4EC5-0001-4128-F0A01FF0F9D0", 15, 3)
+    expectedConfauthorfieldSettingsfixtVal = FieldSettings("dc.contributor.author", false, false, List("english"), false, "http://thesaurus.iadb.org/publicthesauri/IdBAuthors", "1DDF899F-4EC5-0001-4128-F0A01FF0F9D0", 6, 2)
+    expectedConfpoolpartySettingsFixedVal  = PoolpartySettings("http://127.0.0.1:8086","http://127.0.0.1:8086/PoolParty/api/thesaurus","http://127.0.0.1:8086/extractor/api/extract",
+                                                               "http://127.0.0.1:8086/PoolParty/sparql/publicthesauri","1DDF899F-4EC5-0001-4128-F0A01FF0F9D0",
+                                                               "http://thesaurus.iadb.org/publicthesauri","1DDFD773-907F-0001-4CEF-1530D3D519E2","http://thesaurus.iadb.org/jelcodes", 100, 3,
+                                                               CorpusScoringSettings("corpus:8bca0051-152c-4b13-88f2-43283eb4b1bb", "corpus:c8c000a8-25bb-4fb3-b25f-a61a6f76d0e4", "", ""))
 
     expectedconfigInfoFixtVal = """PoolPartyConnectorSettings : {
                                   |

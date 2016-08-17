@@ -6,6 +6,7 @@ package org.iadb.poolpartyconnector.connectorconfiguration
 case class PoolpartySettings(apirootEndpoint:String,
                              thesaurusapiEndpoint: String,
                              extratorapiEndpoint:String,
+                             sparqlEndpoint: String,
                              coreProjectId: String,
                              coreThesaurusUri: String,
                              jelProjectId: String,

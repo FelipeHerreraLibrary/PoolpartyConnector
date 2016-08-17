@@ -7,7 +7,7 @@ import spray.caching._
 import akka.actor.ActorSystem
 import akka.util.Timeout
 import org.iadb.poolpartyconnector.dspacextension.dspaceconnectorconfiguration.DspacePoolPartyConnectorSettings
-import org.iadb.poolpartyconnector.dspacextension.springadaptation.ActorSystemSpringWrapperBean
+import org.iadb.poolpartyconnector.dspacextension.springadaptation.{ActorSystemSpringWrapperBean, ExpiringLruCacheSpringWrapperBean}
 import spray.json._
 import org.iadb.poolpartyconnector.thesaurusoperation.JsonProtocolSpecification.{Concept, GenericConcept, LanguageLiteral, SuggestFreeConcept, Uri}
 import JsonProtocolSpecification.JsonProtocol._
@@ -25,6 +25,7 @@ import scala.concurrent.duration._
  *
  */
 trait ThesaurusCacheService {
+
   def getauthorRepecId(authorUri: String): String
 
 
@@ -59,8 +60,6 @@ trait ThesaurusCacheService {
 
   def getAltLabels(conceptUri: String): List[LanguageLiteral]
 
-
-
 }
 
 
@@ -70,7 +69,10 @@ trait ThesaurusCacheService {
  * An Implementation of the CacheService for the PoolParty Thesaurus Server
  *
  */
-case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connectorSettings: DspacePoolPartyConnectorSettings, thesaurusSparqlConsumer: ThesaurusSparqlConsumer) extends  ThesaurusCacheService {
+case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem,
+                                              connectorSettings: DspacePoolPartyConnectorSettings,
+                                              thesaurusSparqlConsumer: ThesaurusSparqlConsumer,
+                                              cache: Cache[String]) extends  ThesaurusCacheService {
 
   implicit private val requestTimeout = Timeout(60 seconds)
   implicit private val system         = actorSystem
@@ -84,29 +86,28 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem, connecto
   private val fieldsettingsMap        = connectorSettings.fieldsSettingsMap
 
   //TODO: Move it to the configuration file
-  private val sparqlEndpoint          = apirootEndpoint + "/PoolParty/sparql/publicthesauri"
-
-
-  private val cache                   = lruCache[String]()
+  private val sparqlEndpoint          = connectorSettings.poolpartyServerSettings.sparqlEndpoint
 
 
 
-  def this(systemBean: ActorSystemSpringWrapperBean, connectorSettings: DspacePoolPartyConnectorSettings, thesaurusSparqlConsumer: ThesaurusSparqlConsumer) = {
 
-    this(systemBean.getActorSystem, connectorSettings, thesaurusSparqlConsumer)
+
+  def this(systemBean: ActorSystemSpringWrapperBean, connectorSettings: DspacePoolPartyConnectorSettings, thesaurusSparqlConsumer: ThesaurusSparqlConsumer, cacheBean: ExpiringLruCacheSpringWrapperBean) = {
+
+    this(systemBean.system, connectorSettings, thesaurusSparqlConsumer, cacheBean.expiringLruCache)
   }
 
-  def this(systemBean: ActorSystemSpringWrapperBean, connectorSettings: DspacePoolPartyConnectorSettings) = {
+  /*def this(systemBean: ActorSystemSpringWrapperBean, connectorSettings: DspacePoolPartyConnectorSettings) = {
 
     this(systemBean.getActorSystem, connectorSettings, null)
-  }
+  }*/
 
 
-  private def lruCache[T](maxCapacity: Int = 2000, initialCapacity: Int = 2000, timeToLive: Duration = Duration.Inf, timeToIdle: Duration = Duration.Inf) = {
+  /*private def lruCache[T](maxCapacity: Int = 2000, initialCapacity: Int = 2000, timeToLive: Duration = Duration.Inf, timeToIdle: Duration = Duration.Inf) = {
 
     new ExpiringLruCache[T](maxCapacity, initialCapacity, timeToLive, timeToIdle)
 
-  }
+  }*/
 
 
 

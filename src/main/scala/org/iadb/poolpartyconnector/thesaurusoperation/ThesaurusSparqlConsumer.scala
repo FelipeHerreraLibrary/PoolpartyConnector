@@ -2,7 +2,9 @@ package org.iadb.poolpartyconnector.thesaurusoperation
 
 
 import java.net.URL
+import java.time.Instant
 
+import org.iadb.poolpartyconnector.changepropagation._
 import org.iadb.poolpartyconnector.thesaurusoperation.JsonProtocolSpecification.LanguageLiteral
 
 import scala.util.Try
@@ -11,6 +13,8 @@ import scala.util.Try
 //import org.w3.banana.jena.{JenaModule}
 import org.w3.banana._
 import org.w3.banana.sesame.SesameModule
+
+
 
 
 /**
@@ -38,10 +42,10 @@ trait ThesaurusSparqlConsumer extends RDFModule with RDFOpsModule with SparqlOps
                             where {
                               <$conceptUri> <http://thesaurus.iadb.org/repec/repecid> ?repecid
                             } LIMIT 1
-                            """).get
+                            """)
 
     //TODO Try over Parselect, and log problems
-    val answersTry: Try[Rdf#Solutions] = endpoint.executeSelect(query)
+    val answersTry: Try[Rdf#Solutions] = query flatMap  { q => endpoint.executeSelect(q) }
 
     val topicsTry: Try[Iterator[Rdf#Literal]]  = answersTry map { answers => answers.iterator map { row => row("repecid").get.as[Rdf#Literal].get } }
 
@@ -269,6 +273,191 @@ trait ThesaurusSparqlConsumer extends RDFModule with RDFOpsModule with SparqlOps
 
   }
 
+
+  def getHistoryChangeSet(endpointUri: String, startDate: String): List[ChangeEvent] = {
+
+    val endpoint = new URL(endpointUri)
+
+    /*object queryexpression extends Enumeration {
+
+    }*/
+
+    val query    = parseSelect(s"""PREFIX skos:<http://www.w3.org/2004/02/skos/core#>
+                                    PREFIX dcterms:<http://purl.org/dc/terms/>
+                                    PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
+                                    PREFIX change:<http://purl.org/vocab/changeset/schema#>
+                                    PREFIX history:<http://schema.semantic-web.at/ppt/history#>
+                                    select distinct ?eventDescription ?createdDate ?changeType ?subjectOfChange ?newValue ?oldValue ?mergingConcept
+                                    where {
+                                        GRAPH <http://schema.semantic-web.at/ppt/history#context> {
+                                          ?event change:changeType ?changeType .
+                                          ?event change:createdDate ?createdDate .
+                                          ?event change:creatorName ?creatorName .
+                                          ?event change:subjectOfChange ?subjectOfChange .
+                                          ?event history:changeOrder ?changeOrder .
+                                          #filter(?changeOrder = 0) .
+                                          ?event a ?type .
+                                      	 optional { { ?event history:affectedLiteral ?newValue } UNION { ?event history:value ?newValue}}
+                                          optional { ?event history:oldValue ?oldValue }
+                                      	 optional { ?event history:predicate ?predicate }
+                                          optional { ?event history:resourceType ?resourceType }
+                                          #optional { ?event history:value ?value }
+
+                                          FILTER (?createdDate > "${startDate}"^^xsd:dateTime )
+                                          bind(
+                                              if(?type = history:ResourceChangeHistoryEvent || ?type = history:MergeHistoryEvent,
+                                                  # case history:ResourceChangeHistoryEvent
+                                                  if(?type = history:ResourceChangeHistoryEvent,
+                                                      if(?changeType = "ADDITION",
+                                                          if(?resourceType = skos:ConceptScheme,"Concept Scheme added",
+                                                              if(?resourceType = skos:Concept,"Concept added",
+                                                              "")
+                                                          ),
+                                                      if(?changeType = "REMOVAL",
+                                                          if(?resourceType = skos:ConceptScheme,"Concept Scheme deleted",
+                                                              if(?resourceType = skos:Concept,"Concept deleted","")
+                                                          ),
+                                                      "")
+                                                  ),
+                                                  # case history:MergeHistoryEvent
+                                                  if(?changeType = "ADDITION",
+                                                     "Concept merge modified",
+                                                     if(?changeType = "REMOVAL",
+                                                        "Concept merge deprecated","")
+                                                     )
+                                                  ),
+                                                  if(?type = history:LiteralAddRemoveHistoryEvent || ?type = history:LiteralUpdateHistoryEvent,
+                                                      if(?changeType = "ADDITION",
+                                                          if(?predicate = skos:prefLabel,"Preferred Label added",
+                                                              if(?predicate = skos:altLabel,"Alternative Label added",
+                                                                  if(?predicate = skos:hiddenLabel,"Hidden Label added",
+                                                                  "")
+                                                              )
+                                                          ),
+                                                      if(?changeType = "REMOVAL",
+                                                          if(?predicate = skos:prefLabel,"Preferred Label deleted",
+                                                              if(?predicate = skos:altLabel,"Alternative Label deleted",
+                                                                  if(?predicate = skos:hiddenLabel,"Hidden Label deleted",
+                                                                  "")
+                                                              )
+                                                          ),
+                                                      if(?changeType = "UPDATE",
+                                                          if(?predicate = skos:prefLabel,"Preferred Label changed",
+                                                              if(?predicate = skos:altLabel,"Alternative Label changed",
+                                                                  if(?predicate = skos:hiddenLabel,"Hidden Label changed",
+                                                                  "")
+                                                              )
+                                                          ),
+                                                      "")
+                                                      )
+                                                  ),
+                                                  "")
+
+                                              )
+                                              as ?eventDescription)
+                                    	filter(?eventDescription != "" && ?eventDescription != "Concept merge modified") .
+                                        } .
+                                      optional {
+                                         ?subjectOfChange <http://purl.org/dc/terms/isReplacedBy> ?mergingConcept .
+                                        #Filter Exists {graph <http://schema.semantic-web.at/ppt/history#context> { ?event change:changeType "REMOVAL" } }
+                                      }
+
+                                    } order by desc(?createdDate)""")
+
+    val solutions = query.flatMap(e => endpoint.executeSelect(e))
+
+    val changeList = solutions.map{solutions => solutions.iterator() flatMap  {row =>
+
+      val eventDescription = row("eventDescription").get.as[Rdf#Literal].get
+      val createdDate      = row("createdDate").get.as[Rdf#Literal].get
+      val changeType       = row("changeType").get.as[Rdf#Literal].get
+      val subjectOfChange  = row("subjectOfChange").get.as[Rdf#URI].get
+
+      //TODO Change the unsafe get coming with them it is ridiculous
+      val newValue         = row("newValue") map {e => Some(e.as[Rdf#Literal].get)} getOrElse(None)
+      val oldValue         = row("oldValue") map {e => Some(e.as[Rdf#Literal].get)} getOrElse(None)
+      val mergingConcept   = row("mergingConcept") map {e => Some(e.as[Rdf#URI].get)} getOrElse(None)
+
+
+
+
+      changeType.lexicalForm match {
+        case chgt if chgt == "ADDITION" => { //Requires only re-indexation
+          eventDescription.lexicalForm match {
+            case evtd if evtd == "Preferred Label added" =>
+              Some(ChangeEvent(PrefAdded(subjectOfChange.getString, LanguageLiteral(newValue.get.lexicalForm, newValue.get.lang.get.toString)), Instant.parse(createdDate.lexicalForm)))
+            case evtd if evtd == "Alternative Label added" =>
+              Some(ChangeEvent(AltAdded(subjectOfChange.getString, LanguageLiteral(newValue.get.lexicalForm, newValue.get.lang.get.toString)), Instant.parse(createdDate.lexicalForm)))
+            case evtd if evtd == "Hidden Label added" =>
+              Some(ChangeEvent(HiddenAdded(subjectOfChange.getString, LanguageLiteral(newValue.get.lexicalForm, newValue.get.lang.get.toString)), Instant.parse(createdDate.lexicalForm)))
+            case _ => None //TODO Concept Addition
+          }
+
+        }
+        case chgt if chgt == "UPDATE" => { //Requires everything = Cache update + reindex
+          eventDescription.lexicalForm match {
+            case evtd if evtd == "Preferred Label changed" =>
+              Some(ChangeEvent(PrefChanged(subjectOfChange.getString,
+                                           LanguageLiteral(newValue.get.lexicalForm, newValue.get.lang.get.toString),
+                                           LanguageLiteral(oldValue.get.lexicalForm, oldValue.get.lang.get.toString)),
+                               Instant.parse(createdDate.lexicalForm)))
+            case evtd if evtd == "Alternative Label changed" =>
+              Some(ChangeEvent(AltChanged(subjectOfChange.getString,
+                                           LanguageLiteral(newValue.get.lexicalForm, newValue.get.lang.get.toString),
+                                           LanguageLiteral(oldValue.get.lexicalForm, oldValue.get.lang.get.toString)),
+                               Instant.parse(createdDate.lexicalForm)))
+            case evtd if evtd == "Hidden Label changed" =>
+              Some(ChangeEvent(HiddenChanged(subjectOfChange.getString,
+                                             LanguageLiteral(newValue.get.lexicalForm, newValue.get.lang.get.toString),
+                                             LanguageLiteral(oldValue.get.lexicalForm, oldValue.get.lang.get.toString)),
+                               Instant.parse(createdDate.lexicalForm)))
+            case _ => None
+          }
+        }
+        case chgt if chgt == "REMOVAL" => { //Requires everything = Cache update + reindex
+          eventDescription.lexicalForm match {
+            case evtd if evtd == "Concept merge deprecated" &&  mergingConcept != None =>
+              Some(ChangeEvent(ConceptMerged(subjectOfChange.getString, mergingConcept.get.getString), Instant.parse(createdDate.lexicalForm)))
+            case _ => None //TODO Concept Deleted or other Labels deleted
+          }
+        }
+      }
+
+
+    }}
+
+    changeList map {e => e.toList} getOrElse(List.empty)
+
+  }
+
+
+  def getScheme(EndpointUri: String, ConceptUri: String): List[String] = {
+
+    val endpoint = new URL(EndpointUri)
+
+    val query    = parseSelect(s"""
+                            PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+                            SELECT DISTINCT ?scheme
+                            where {
+                              {
+                                <$ConceptUri> skos:inScheme ?scheme .
+                              }
+                              UNION
+                              {
+                                <$ConceptUri> skos:broader+ ?broader.
+                                ?broader skos:inScheme ?scheme .
+                              }
+                            } LIMIT 100
+                            """)
+
+
+    val solutions: Try[Rdf#Solutions] = query.flatMap(q => endpoint.executeSelect(q))
+
+    val literals = solutions.map { solutions => {solutions.iterator() map {row => row("scheme").get.as[Rdf#URI].get}}.toList }
+
+    literals map {literals => literals map {e => e.getString} } getOrElse List.empty
+
+  }
 
 }
 

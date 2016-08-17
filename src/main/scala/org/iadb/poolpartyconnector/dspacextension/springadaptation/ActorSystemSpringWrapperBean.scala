@@ -1,6 +1,8 @@
 package org.iadb.poolpartyconnector.dspacextension.springadaptation
 
 import akka.actor.ActorSystem
+import scala.concurrent.duration._
+import scala.concurrent.Await
 
 /**
  * Created by Daniel Maatari Okouya on 6/10/15.
@@ -10,11 +12,15 @@ import akka.actor.ActorSystem
  *
  */
 trait ActorSystemSpringWrapperBean {
+  val system   : ActorSystem
+  def shutdown : Unit
+}
 
 
-  def getActorSystem: ActorSystem
+class ActorSystemSpringWrapperBeanImpl extends ActorSystemSpringWrapperBean {
 
+  println(s"I m the ActorSystemSpringWrapperBeanImpl numer: ${System.identityHashCode(this)}")
 
-  def shutdown: Unit
-
+  val system   = ActorSystem("PoolPartyConnector-ActorSystem")
+  def shutdown = {system.log.info("Shutting down the actor system"); Await.result(system.terminate(), 5 seconds)}
 }

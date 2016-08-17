@@ -14,6 +14,7 @@ import scala.collection.JavaConverters._
 trait DspacePoolPartyConnectorSettings {
 
   def poolpartyServerSettings   : PoolpartySettings
+  def corprusScoringSettings    : CorpusScoringSettings
   def fieldsSettingsList        : List[FieldSettings]
   def fieldsSettingsMap         : Map[String, FieldSettings]
   def skoslangCodesMappingsList : List[SkoslangCodeMapping]
@@ -41,6 +42,7 @@ case class DspaceDspacePoolPartyConnectorSettingImpl (configUri: String) extends
   val poolpartyServerSettings            = PoolpartySettings(configPoolPartySettings.getString("apirootEndpoint"),
                                                              configPoolPartySettings.getString("thesaurusapiEndpoint"),
                                                              configPoolPartySettings.getString("extratorapiEndpoint"),
+                                                             configPoolPartySettings.getString("sparqlEndpoint"),
                                                              configPoolPartySettings.getString("coreProjectId"),
                                                              configPoolPartySettings.getString("coreThesaurusUri"),
                                                              configPoolPartySettings.getString("jelProjectId"),
