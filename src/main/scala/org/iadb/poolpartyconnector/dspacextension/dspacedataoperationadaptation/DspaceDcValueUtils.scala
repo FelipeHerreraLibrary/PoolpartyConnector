@@ -1,41 +1,12 @@
 package org.iadb.poolpartyconnector.dspacextension.dspacedataoperationadaptation
 
 import org.dspace.content.DCValue
-import org.iadb.poolpartyconnector.thesaurusoperation.CachedConcept
+//import org.iadb.poolpartyconnector.thesaurusoperation.CachedConcept
 
 /**
  * Created by Daniel Maatari Okouya on 6/21/15.
  */
 object DspaceDcValueUtils {
-
-  def asDCValue(dcvalueblueprint: DCValue, cachedconcept: Option[CachedConcept]): DCValue = {
-
-    cachedconcept match {
-
-      case Some(e) => {getDCValue(dcvalueblueprint.element, dcvalueblueprint.qualifier, e.uri,
-                                  dcvalueblueprint.language,
-                                  dcvalueblueprint.schema,
-                                  e.authority,
-                                  e.confidence
-                                  )
-                      }
-      case None => {getDCValue(dcvalueblueprint.element, dcvalueblueprint.qualifier, dcvalueblueprint.value,
-                               dcvalueblueprint.language,
-                               dcvalueblueprint.schema,
-                               dcvalueblueprint.authority,
-                               dcvalueblueprint.confidence
-                               )
-                    }
-
-    }
-
-
-  }
-
-
-
-
-
 
   /**
    * Helper method to build a DCValue quickly
