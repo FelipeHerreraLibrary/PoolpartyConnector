@@ -185,6 +185,42 @@ trait ThesaurusSparqlConsumer extends RDFModule with RDFOpsModule with SparqlOps
 
   }
 
+  def getAllLangNarrowerLabels(EndpointUri: String, ConceptUri: String): List[LanguageLiteral] = {
+
+    val endpoint = new URL(EndpointUri)
+
+    val query    = parseSelect(s"""
+                            PREFIX skos:<http://www.w3.org/2004/02/skos/core#>
+                                  select ?indexableLabel
+                                  {
+                                    <$ConceptUri> skos:narrower+ ?narrower .
+
+                                    {
+                                      ?narrower  skos:altLabel ?indexableLabel .
+                                    }
+                                    UNION
+                                    {
+                                      ?narrower  skos:hiddenLabel ?indexableLabel .
+                                    }
+                                    UNION
+                                    {
+                                      ?narrower skos:prefLabel ?indexableLabel .
+                                    }
+
+                                  }  LIMIT 100
+                            """).get
+
+
+
+    val answersTry: Try[Rdf#Solutions]        = endpoint.executeSelect(query)
+
+    val labelsTry: Try[Iterator[Rdf#Literal]] = answersTry map { answers => answers.iterator map { row => row("indexableLabel").get.as[Rdf#Literal].get }}
+
+    val languageLiteralTry = labelsTry map {languages => languages.toList map {e => LanguageLiteral(e.lexicalForm, e.lang.get.toString)}}
+
+    languageLiteralTry getOrElse List.empty
+
+  }
 
   def getAllLangRelatedLabels(EndpointUri: String, ConceptUri: String): List[LanguageLiteral] = {
 
