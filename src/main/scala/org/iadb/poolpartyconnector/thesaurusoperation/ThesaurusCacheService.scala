@@ -28,12 +28,9 @@ trait ThesaurusCacheService {
 
   def getauthorRepecId(authorUri: String): String
 
-
   def createSuggestedFreeConceptsConcurrent(suggestedPrefLabels: List[LanguageLiteral], scheme: String, checkDuplicates: Boolean): List[String]
 
-
   def createSuggestedFreeConcepts(suggestedPrefLabel: List[LanguageLiteral], scheme: String, checkDuplicates: Boolean): List[String]
-
 
   def getConceptPrefLabelWithDefaultLangfallback(uri: String, lang: String): String
 
@@ -41,12 +38,9 @@ trait ThesaurusCacheService {
 
   def getPrefLabelforConcept(uri: String, lang:String = "en") : String
 
-
   def getPrefLabelforConceptFuture(uri: String, lang:String = "en"): Future[String]
 
-
   def getPrefLabelsforConcepts(uris: List[String], lang:String = "en"): List[String]
-
 
   def getIdbDocWebTopic(conceptUri: String): List[String]
 
@@ -55,6 +49,8 @@ trait ThesaurusCacheService {
   def getIndexableLabels(conceptUri: String): List[LanguageLiteral]
 
   def getBroaderLabels(conceptUri: String): List[LanguageLiteral]
+
+  def getNarrowerLabels(conceptUri: String): List[LanguageLiteral]
 
   def getRelatedLabels(conceptUri: String): List[LanguageLiteral]
 
