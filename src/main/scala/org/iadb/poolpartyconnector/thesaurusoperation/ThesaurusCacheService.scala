@@ -554,9 +554,15 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem,
 
   }
 
-   def getBroaderLabels(conceptUri: String): List[LanguageLiteral] = {
+  def getBroaderLabels(conceptUri: String): List[LanguageLiteral] = {
 
     thesaurusSparqlConsumer.getAllLangBroaderLabels(sparqlEndpoint, conceptUri)
+
+  }
+
+  def getNarrowerLabels(conceptUri: String): List[LanguageLiteral] = {
+
+    thesaurusSparqlConsumer.getAllLangNarrowerLabels(sparqlEndpoint, conceptUri)
 
   }
 
