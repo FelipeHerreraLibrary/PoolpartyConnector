@@ -4,10 +4,13 @@ package org.iadb.poolpartyconnector.thesaurusoperation
 import java.net.URL
 import java.time.Instant
 
+import akka.actor.Status.Success
+import com.github.jsonldjava.core.RDFDataset.Literal
 import org.iadb.poolpartyconnector.changepropagation._
 import org.iadb.poolpartyconnector.thesaurusoperation.JsonProtocolSpecification.LanguageLiteral
+import org.openrdf.model.impl.LiteralImpl
 
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 //import com.hp.hpl.jena.Jena
 //import org.w3.banana.jena.{JenaModule}
@@ -495,8 +498,94 @@ trait ThesaurusSparqlConsumer extends RDFModule with RDFOpsModule with SparqlOps
 
   }
 
-}
+  def getBroaderId(endpointUri: String, ConceptUri: String ) : String ={
+    val endpoint = new URL(endpointUri)
+    val query    = parseSelect(s"""
+                                  PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+                                  SELECT ?broader
+                                  where {
+                                  <$ConceptUri> skos:broader+ ?broader.
+                                  }
+                                """).get
+    val solutions: Try[Rdf#Solutions] = endpoint.executeSelect(query)
 
+    val literals = solutions.map { solutions => {solutions.iterator() map {row => row("created").get.as[Rdf#Literal].get}}.toList }
+
+    val value = literals.get.head.asInstanceOf[LiteralImpl] getLabel
+
+    if(value.isEmpty){
+      ""
+    }else{
+      value
+    }
+   }
+
+  def getAllNarrowerIds(EndpointUri: String, ConceptUri: String): List[String] = {
+
+    val endpoint = new URL(EndpointUri)
+
+    val query    = parseSelect(s"""
+                                  PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+                                  SELECT ?narrower
+                                      where {
+                                          <$ConceptUri> skos:narrower+ ?narrower.
+                                      }
+                            """).get
+
+    val solutions: Try[Rdf#Solutions] = endpoint.executeSelect(query)
+
+    val literals = solutions.map { solutions => {solutions.iterator() map {row => row("narrower").get.as[Rdf#URI].get}}.toList }
+
+    literals map {literals => literals map {e => e.getString} } getOrElse List.empty
+  }
+
+  def getCreatedDate(endpointUri: String, ConceptUri: String ) : String ={
+    val endpoint = new URL(endpointUri)
+    val query    = parseSelect(s"""
+                                   PREFIX dc:<http://purl.org/dc/terms/>
+                                   select ?created
+                                   where {
+                                     <$ConceptUri>  dc:created ?created.
+                                   }
+                                """).get
+    val solutions: Try[Rdf#Solutions] = endpoint.executeSelect(query)
+
+    val literals = solutions.map { solutions => {solutions.iterator() map {row => row("created").get.as[Rdf#Literal].get}}.toList }
+
+    val value = literals.get.head.asInstanceOf[LiteralImpl] getLabel
+
+    if(value.isEmpty){
+      ""
+    }else{
+      value
+    }
+  }
+
+  def getLastModifiedDate(endpointUri: String, ConceptUri: String ) : String ={
+    val endpoint = new URL(endpointUri)
+    val query    = parseSelect(s"""
+                                   PREFIX dc:<http://purl.org/dc/terms/>
+                                   select ?modified
+                                   where {
+                                     <$ConceptUri>  dc:modified ?modified.
+                                   }
+                                """).get
+    val solutions: Try[Rdf#Solutions] = endpoint.executeSelect(query)
+
+    val literals = solutions.map { solutions => {solutions.iterator() map {row => row("modified").get.as[Rdf#Literal].get}}.toList }
+
+    val value = literals.get.head.asInstanceOf[LiteralImpl] getLabel
+
+    if(value.isEmpty){
+        ""
+    }else{
+        value
+    }
+
+  }
+
+
+}
 
 case class ThesaurusSparqlConsumerJenaImpl() extends ThesaurusSparqlConsumer with SesameModule {
 

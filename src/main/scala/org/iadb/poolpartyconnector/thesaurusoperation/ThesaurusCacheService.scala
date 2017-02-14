@@ -56,6 +56,14 @@ trait ThesaurusCacheService {
 
   def getAltLabels(conceptUri: String): List[LanguageLiteral]
 
+  def getBroaderId(conceptUri: String): String
+
+  def getNarrowerIds(conceptUri: String): List[String]
+
+  def getModifiedLastDate(conceptUri: String): String
+
+  def getCreatedDate(conceptUri: String): String
+
 }
 
 
@@ -580,6 +588,30 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem,
       case head::Nil => head
       case _ => ""
     }
+  }
+
+  def getBroaderId(conceptUri: String): String = {
+
+    thesaurusSparqlConsumer.getBroaderId(sparqlEndpoint, conceptUri)
 
   }
+
+  def getNarrowerIds(conceptUri: String): List[String] = {
+
+    thesaurusSparqlConsumer.getAllNarrowerIds(sparqlEndpoint, conceptUri)
+
+  }
+
+  def getModifiedLastDate(conceptUri: String): String = {
+
+    thesaurusSparqlConsumer.getLastModifiedDate(sparqlEndpoint, conceptUri)
+
+  }
+
+  def getCreatedDate(conceptUri: String): String = {
+
+    thesaurusSparqlConsumer.getCreatedDate(sparqlEndpoint, conceptUri)
+
+  }
+
 }

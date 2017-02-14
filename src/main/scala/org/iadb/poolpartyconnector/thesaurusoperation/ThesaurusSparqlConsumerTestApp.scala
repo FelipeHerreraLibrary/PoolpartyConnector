@@ -15,7 +15,8 @@ object ThesaurusSparqlConsumerTestApp extends App {
                                                          "2016-07-21T00:00:00Z"
                                                        ) foreach  {
     println(_)
-  } */
+
+
 
   println(ThesaurusSparqlConsumerJenaImpl().isBroaderConcept("http://localhost:8086/PoolParty/sparql/publicthesauri",
     "http://localhost:8086/publicthesauri/5359760942722238",
@@ -26,5 +27,13 @@ object ThesaurusSparqlConsumerTestApp extends App {
     "2016-07-21T00:00:00Z"
   ) foreach  {
     println(_)
-  }
+
+  println(ThesaurusSparqlConsumerJenaImpl().getAllNarrowerIds("http://localhost:8086/PoolParty/sparql/publicthesauri",
+    "http://thesaurus.iadb.org/publicthesauri/132913920474444178771096") )
+   */
+
+  println(ThesaurusSparqlConsumerJenaImpl().getLastModifiedDate("http://localhost:8086/PoolParty/sparql/publicthesauri",
+    "http://thesaurus.iadb.org/publicthesauri/45466564926317124") )
+
+
 }
