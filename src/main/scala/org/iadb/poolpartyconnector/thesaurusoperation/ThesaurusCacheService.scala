@@ -64,6 +64,10 @@ trait ThesaurusCacheService {
 
   def getCreatedDate(conceptUri: String): String
 
+  def getConceptUriByCode(Code: String): List[String]
+
+  def getShemaFromCode(Code: String): String
+
 }
 
 
@@ -94,7 +98,17 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem,
 
 
 
+  def getShemaFromCode(Code: String): String = {
 
+    thesaurusSparqlConsumer.getShemaFromCode(sparqlEndpoint, Code)
+
+  }
+
+  def getConceptUriByCode(Code: String): List[String] = {
+
+    thesaurusSparqlConsumer.getConceptUriByCode(sparqlEndpoint, Code)
+
+  }
 
   def this(systemBean: ActorSystemSpringWrapperBean, connectorSettings: DspacePoolPartyConnectorSettings, thesaurusSparqlConsumer: ThesaurusSparqlConsumer, cacheBean: ExpiringLruCacheSpringWrapperBean) = {
 

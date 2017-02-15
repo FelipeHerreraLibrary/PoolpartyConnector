@@ -35,6 +35,52 @@ trait ThesaurusSparqlConsumer extends RDFModule with RDFOpsModule with SparqlOps
 
 
 
+  def getShemaFromCode(EndpointUri: String, Code: String): String = {
+
+    val endpoint = new URL(EndpointUri)
+
+    val query    = parseSelect(s"""
+                            PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+                                SELECT DISTINCT ?schema
+                                    where {
+                                    ?ConceptUri <http://thesaurus.iadb.org/idbdoc/idbdocmatch> "$Code".
+                                    ?ConceptUri skos:inScheme ?schema.
+                                }
+                            """).get
+
+    val solutions: Try[Rdf#Solutions] = endpoint.executeSelect(query)
+
+    val schemaURI = solutions.map { solution => {solution.iterator() map {row => row("schema").get.as[Rdf#URI].get}}.toList}.get
+
+    if(schemaURI.isEmpty){
+      ""
+    }else{
+      schemaURI.head.toString
+    }
+  }
+
+  def getConceptUriByCode(EndpointUri: String, Code: String): List[String] = {
+
+    val endpoint = new URL(EndpointUri)
+
+    val query    = parseSelect(s"""
+                            PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+                                SELECT ?ConceptUri
+                                    where {
+                                    ?ConceptUri <http://thesaurus.iadb.org/idbdoc/idbdocmatch> "$Code".
+                                }
+                            """).get
+
+
+    val solutions: Try[Rdf#Solutions] = endpoint.executeSelect(query)
+
+    val uris = solutions.map { solutions => {solutions.iterator() map {row => row("ConceptUri").get.as[Rdf#URI].get}}.toList }.get
+
+    uris map {row => row.toString}
+
+  }
+
+
   def getRepecId(endpointUri: String, conceptUri: Any): List[String] = {
 
     val endpoint = new URL(endpointUri)
@@ -509,15 +555,16 @@ trait ThesaurusSparqlConsumer extends RDFModule with RDFOpsModule with SparqlOps
                                 """).get
     val solutions: Try[Rdf#Solutions] = endpoint.executeSelect(query)
 
-    val literals = solutions.map { solutions => {solutions.iterator() map {row => row("created").get.as[Rdf#Literal].get}}.toList }
+    val literals = solutions.map { solutions => {solutions.iterator() map {row => row("broader").get.as[Rdf#URI].get}}.toList }
 
-    val value = literals.get.head.asInstanceOf[LiteralImpl] getLabel
+    val value = literals.get
 
     if(value.isEmpty){
       ""
     }else{
-      value
+      value.head.toString
     }
+
    }
 
   def getAllNarrowerIds(EndpointUri: String, ConceptUri: String): List[String] = {
@@ -552,12 +599,12 @@ trait ThesaurusSparqlConsumer extends RDFModule with RDFOpsModule with SparqlOps
 
     val literals = solutions.map { solutions => {solutions.iterator() map {row => row("created").get.as[Rdf#Literal].get}}.toList }
 
-    val value = literals.get.head.asInstanceOf[LiteralImpl] getLabel
+    val value = literals.get
 
     if(value.isEmpty){
       ""
     }else{
-      value
+      value.head.asInstanceOf[LiteralImpl] getLabel
     }
   }
 
@@ -574,12 +621,12 @@ trait ThesaurusSparqlConsumer extends RDFModule with RDFOpsModule with SparqlOps
 
     val literals = solutions.map { solutions => {solutions.iterator() map {row => row("modified").get.as[Rdf#Literal].get}}.toList }
 
-    val value = literals.get.head.asInstanceOf[LiteralImpl] getLabel
+    val value = literals.get
 
     if(value.isEmpty){
-        ""
+      ""
     }else{
-        value
+      value.head.asInstanceOf[LiteralImpl] getLabel
     }
 
   }

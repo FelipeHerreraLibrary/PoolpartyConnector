@@ -30,10 +30,31 @@ object ThesaurusSparqlConsumerTestApp extends App {
 
   println(ThesaurusSparqlConsumerJenaImpl().getAllNarrowerIds("http://localhost:8086/PoolParty/sparql/publicthesauri",
     "http://thesaurus.iadb.org/publicthesauri/132913920474444178771096") )
-   */
+
 
   println(ThesaurusSparqlConsumerJenaImpl().getLastModifiedDate("http://localhost:8086/PoolParty/sparql/publicthesauri",
     "http://thesaurus.iadb.org/publicthesauri/45466564926317124") )
 
+  println(ThesaurusSparqlConsumerJenaImpl().getCreatedDate("http://localhost:8086/PoolParty/sparql/publicthesauri",
+    "http://thesaurus.iadb.org/publicthesauri/45466564926317124") )
+
+  println(ThesaurusSparqlConsumerJenaImpl().getAllNarrowerIds("http://localhost:8086/PoolParty/sparql/publicthesauri",
+    "http://thesaurus.iadb.org/publicthesauri/45466564926317124"))
+
+  println(ThesaurusSparqlConsumerJenaImpl().getBroaderId("http://localhost:8086/PoolParty/sparql/publicthesauri",
+    "http://thesaurus.iadb.org/publicthesauri/45466564926317124"))
+
+  println(ThesaurusSparqlConsumerJenaImpl().getBroaderId("http://localhost:8086/PoolParty/sparql/publicthesauri",
+    "http://thesaurus.iadb.org/publicthesauri/132913920474444178771096"))
+
+   println(ThesaurusSparqlConsumerJenaImpl().getConceptUriByCode("http://localhost:8086/PoolParty/sparql/publicthesauri", "GE-GES"));
+
+   println(ThesaurusSparqlConsumerJenaImpl().getConceptUriByCode("http://localhost:8086/PoolParty/sparql/publicthesauri", "GE-G"));
+
+  */
+
+  println(ThesaurusSparqlConsumerJenaImpl().getShemaFromCode("http://localhost:8086/PoolParty/sparql/publicthesauri", "GE-GES"));
+
+  println(ThesaurusSparqlConsumerJenaImpl().getShemaFromCode("http://localhost:8086/PoolParty/sparql/publicthesauri", "GE-G"));
 
 }
