@@ -34,6 +34,34 @@ trait ThesaurusSparqlConsumer extends RDFModule with RDFOpsModule with SparqlOps
   import sparqlHttp.sparqlEngineSyntax._
 
 
+  def getMatchesConceptInSchema(EndpointUri: String, label: String, schema:String, start: Integer, limit: Integer ): List[String] = {
+
+    val endpoint = new URL(EndpointUri)
+
+    val query = parseSelect(s"""
+                               PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+                                   SELECT DISTINCT ?conceptURI
+                                       WHERE {
+                                           {
+                                               ?conceptURI skos:prefLabel ?label.
+                                               ?conceptURI skos:inScheme <$schema>.
+                                                  FILTER regex(?label, "$label", "i")
+                                           } UNION {
+                                               ?conceptURI skos:altLabel ?label.
+                                              ?conceptURI skos:inScheme <$schema>.
+                                                   FILTER regex(?label, "$label", "i")
+                                     }
+                               }
+                               OFFSET $start
+                               LIMIT $limit
+             """).get
+
+    val solutions: Try[Rdf#Solutions] = endpoint.executeSelect(query)
+
+    val literals = solutions.map { solutions => {solutions.iterator() map {row => row("conceptURI").get.as[Rdf#URI].get}}.toList }
+
+    literals map {literals => literals map {e => e.getString} } getOrElse List.empty
+  }
 
   def getShemaFromCode(EndpointUri: String, Code: String): String = {
 

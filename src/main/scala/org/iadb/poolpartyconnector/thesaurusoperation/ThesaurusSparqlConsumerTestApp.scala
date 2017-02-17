@@ -47,14 +47,25 @@ object ThesaurusSparqlConsumerTestApp extends App {
   println(ThesaurusSparqlConsumerJenaImpl().getBroaderId("http://localhost:8086/PoolParty/sparql/publicthesauri",
     "http://thesaurus.iadb.org/publicthesauri/132913920474444178771096"))
 
+
    println(ThesaurusSparqlConsumerJenaImpl().getConceptUriByCode("http://localhost:8086/PoolParty/sparql/publicthesauri", "GE-GES"));
+
+  println(ThesaurusSparqlConsumerJenaImpl().getConceptUriByCode("http://localhost:8086/PoolParty/sparql/publicthesauri", "ITE"));
 
    println(ThesaurusSparqlConsumerJenaImpl().getConceptUriByCode("http://localhost:8086/PoolParty/sparql/publicthesauri", "GE-G"));
 
-  */
+
 
   println(ThesaurusSparqlConsumerJenaImpl().getShemaFromCode("http://localhost:8086/PoolParty/sparql/publicthesauri", "GE-GES"));
 
   println(ThesaurusSparqlConsumerJenaImpl().getShemaFromCode("http://localhost:8086/PoolParty/sparql/publicthesauri", "GE-G"));
+  */
 
+  println(ThesaurusSparqlConsumerJenaImpl().getMatchesConceptInSchema("http://localhost:8086/PoolParty/sparql/publicthesauri", "know", "http://thesaurus.iadb.org/publicthesauri/IdBTopics", 0, 5))
+
+  println(ThesaurusSparqlConsumerJenaImpl().getMatchesConceptInSchema("http://localhost:8086/PoolParty/sparql/publicthesauri", "know", "http://thesaurus.iadb.org/publicthesauri/IdBDepartments",0,5))
+
+  println(ThesaurusSparqlConsumerJenaImpl().getMatchesConceptInSchema("http://localhost:8086/PoolParty/sparql/publicthesauri", "know", "http://thesaurus.iadb.org/publicthesauri/IdBDepartments",1,5))
+
+  println(ThesaurusSparqlConsumerJenaImpl().getMatchesConceptInSchema("http://localhost:8086/PoolParty/sparql/publicthesauri", "know", "http://thesaurus.iadb.org/publicthesauri/IdBDepartments",2,5))
 }
