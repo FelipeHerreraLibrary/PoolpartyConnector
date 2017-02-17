@@ -63,6 +63,29 @@ trait ThesaurusSparqlConsumer extends RDFModule with RDFOpsModule with SparqlOps
     literals map {literals => literals map {e => e.getString} } getOrElse List.empty
   }
 
+  def getShemaFromURI(EndpointUri: String, conceptUri: String): String = {
+
+    val endpoint = new URL(EndpointUri)
+
+    val query    = parseSelect(s"""
+                            PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+                                SELECT DISTINCT ?schema
+                                    where {
+                                    <$conceptUri> skos:inScheme ?schema.
+                                }
+                            """).get
+
+    val solutions: Try[Rdf#Solutions] = endpoint.executeSelect(query)
+
+    val schemaURI = solutions.map { solution => {solution.iterator() map {row => row("schema").get.as[Rdf#URI].get}}.toList}.get
+
+    if(schemaURI.isEmpty){
+      ""
+    }else{
+      schemaURI.head.toString
+    }
+  }
+
   def getShemaFromCode(EndpointUri: String, Code: String): String = {
 
     val endpoint = new URL(EndpointUri)

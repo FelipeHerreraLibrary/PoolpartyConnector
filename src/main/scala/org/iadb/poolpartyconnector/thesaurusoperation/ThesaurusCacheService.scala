@@ -70,6 +70,8 @@ trait ThesaurusCacheService {
 
   def getMatchesConceptInSchema(label: String, shcema: String, start: Integer, limit: Integer): List[String]
 
+  def getShemaFromUri(ConceptUri: String): String
+
 }
 
 
@@ -97,6 +99,12 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem,
 
   //TODO: Move it to the configuration file
   private val sparqlEndpoint          = connectorSettings.poolpartyServerSettings.sparqlEndpoint
+
+  def getShemaFromUri(ConceptUri: String): String = {
+
+    thesaurusSparqlConsumer.getShemaFromURI(sparqlEndpoint, ConceptUri)
+
+  }
 
   def getMatchesConceptInSchema(label: String, schema: String, start: Integer, limit: Integer): List [String] ={
      thesaurusSparqlConsumer.getMatchesConceptInSchema(sparqlEndpoint, label, schema, start, limit)
