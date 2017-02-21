@@ -36,6 +36,8 @@ trait RelevantConceptsRecommendationService {
 
   def recommendMetadata(inputstream: InputStream, lang: String) : ConceptResults
 
+  def recommendMetadataConcepts(inputstream: InputStream, lang: String) : List[Concept]
+
   def filterBroader(conceptList: List[Concept]) : List[Concept]
 
 }
@@ -105,6 +107,35 @@ case class RelevantConceptsRecommendationServicePoolPartyImpl(actorSystem: Actor
 
     filterResultsWithExtractionSettings(conceptResults)
 
+  }
+
+  def recommendMetadataConcepts(inputstream: InputStream, lang: String = "en"): List [Concept] = {
+
+    println("Start Recommanding Process ...")
+
+    import system.dispatcher
+
+    val tmpToClassify = TemporaryCopyUtils.getemporaryCopy(inputstream)
+
+    val pipeline      = addCredentials(BasicHttpCredentials("superadmin", "poolparty")) ~> sendReceive
+
+    val payload       = MultipartFormData(Seq(BodyPart(tmpToClassify, "file"/*,MediaTypes.`application/pdf`*/)))
+
+    val corpus        = getCorpus(lang, corpusSettings)
+
+    val request       = Post(s"$extratorapiEndpoint?projectId=$coreProjectId&language=$lang&corpusScoring=$corpus&numberOfConcepts=$numConceptsPool&numberOfTerms=$numTermsPool", payload)
+
+    val res           = pipeline(request)
+
+    logResponseWithTime(res)
+
+    val conceptResults = getConceptResultsFromFutureHttpResponse(res)
+
+    TemporaryCopyUtils.deleteTemporaryCopy(tmpToClassify)
+
+    val filtredConceptResults = filterResultsWithExtractionSettings(conceptResults)
+
+    filtredConceptResults.document.get.concepts.get
 
   }
 

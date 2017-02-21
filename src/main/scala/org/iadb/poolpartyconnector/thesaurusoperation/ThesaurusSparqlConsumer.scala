@@ -34,7 +34,32 @@ trait ThesaurusSparqlConsumer extends RDFModule with RDFOpsModule with SparqlOps
   import sparqlHttp.sparqlEngineSyntax._
 
 
-  def getMatchesConceptInSchema(EndpointUri: String, label: String, schema:String, start: Integer, limit: Integer ): List[String] = {
+    def getIdentifier(EndpointUri: String, startDate: String , endDate: String,  start: Integer, pagesize: Integer ): List[String] = {
+
+       val endpoint = new URL(EndpointUri)
+
+       val query = parseSelect(s"""
+                               PREFIX dc:<http://purl.org/dc/terms/>
+                               PREFIX xs:<http://www.w3.org/2001/XMLSchema#>
+                                  SELECT ?conceptUri
+                                      WHERE {
+                                          ?conceptUri dc:created ?date.
+                                          FILTER (?date > "$startDate"^^xs:dateTime  && ?date < "$endDate"^^xs:dateTime )
+                                   }
+                               OFFSET $start
+                               LIMIT $pagesize
+             """).get
+
+       val solutions: Try[Rdf#Solutions] = endpoint.executeSelect(query)
+
+       val uris = solutions.map { solutions => {solutions.iterator() map {row => row("conceptUri").get.as[Rdf#URI].get}}.toList }.get
+
+       uris map {row => row.toString}
+
+
+    }
+
+    def getMatchesConceptInSchema(EndpointUri: String, label: String, schema:String, start: Integer, limit: Integer ): List[String] = {
 
     val endpoint = new URL(EndpointUri)
 

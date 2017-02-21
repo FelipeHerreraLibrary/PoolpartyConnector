@@ -72,10 +72,9 @@ trait ThesaurusCacheService {
 
   def getShemaFromUri(ConceptUri: String): String
 
+  def getIdentifier(startDate: String, endDate: String, start: Integer, pagesize: Integer): List[String]
+
 }
-
-
-
 
 /**
  * An Implementation of the CacheService for the PoolParty Thesaurus Server
@@ -99,6 +98,15 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem,
 
   //TODO: Move it to the configuration file
   private val sparqlEndpoint          = connectorSettings.poolpartyServerSettings.sparqlEndpoint
+
+
+
+  def getIdentifier(startDate: String , endDate: String,  start: Integer, pagesize: Integer ): List [String] = {
+
+     thesaurusSparqlConsumer.getIdentifier(sparqlEndpoint, startDate, endDate, start, pagesize)
+
+  }
+
 
   def getShemaFromUri(ConceptUri: String): String = {
 

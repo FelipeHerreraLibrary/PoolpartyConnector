@@ -54,12 +54,10 @@ object ThesaurusSparqlConsumerTestApp extends App {
 
    println(ThesaurusSparqlConsumerJenaImpl().getConceptUriByCode("http://localhost:8086/PoolParty/sparql/publicthesauri", "GE-G"));
 
-
-
   println(ThesaurusSparqlConsumerJenaImpl().getShemaFromCode("http://localhost:8086/PoolParty/sparql/publicthesauri", "GE-GES"));
 
   println(ThesaurusSparqlConsumerJenaImpl().getShemaFromCode("http://localhost:8086/PoolParty/sparql/publicthesauri", "GE-G"));
-  */
+
 
   println(ThesaurusSparqlConsumerJenaImpl().getMatchesConceptInSchema("http://localhost:8086/PoolParty/sparql/publicthesauri", "know", "http://thesaurus.iadb.org/publicthesauri/IdBTopics", 0, 5))
 
@@ -68,4 +66,9 @@ object ThesaurusSparqlConsumerTestApp extends App {
   println(ThesaurusSparqlConsumerJenaImpl().getMatchesConceptInSchema("http://localhost:8086/PoolParty/sparql/publicthesauri", "know", "http://thesaurus.iadb.org/publicthesauri/IdBDepartments",1,5))
 
   println(ThesaurusSparqlConsumerJenaImpl().getMatchesConceptInSchema("http://localhost:8086/PoolParty/sparql/publicthesauri", "know", "http://thesaurus.iadb.org/publicthesauri/IdBDepartments",2,5))
+
+  */
+  
+  println(ThesaurusSparqlConsumerJenaImpl().getIdentifier("http://localhost:8086/PoolParty/sparql/publicthesauri", "2010-01-01", "2016-12-31", 0, 10))
+
 }

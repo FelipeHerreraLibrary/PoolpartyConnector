@@ -112,10 +112,11 @@ class RecommendRevelevantConceptsFeatureSpec extends FeatureSpec with Matchers w
 
       Given("a connector Recommendation Service initialized with the following connector Settings: ")
 
-        val loadedConnectorSettings = DspaceDspacePoolPartyConnectorSettingImpl ("file:///Users/maatary/Dev/IdeaProjects/PoolpartyConnector/src/test/resources/poolpartydspace.conf")
+        val loadedConnectorSettings = DspaceDspacePoolPartyConnectorSettingImpl ("file:///Users/luizfr/Development/ideaprojects/PoolpartyConnector/src/test/resources/poolpartydspace.conf")
 
-        val in                      = Files.newInputStream(new File(getClass.getResource("/Resumen_EjecutivoCPEBRENGBRIK6.pdf").toURI).toPath)
+        //val in                      = Files.newInputStream(new File(getClass.getResource("/Resumen_EjecutivoCPEBRENGBRIK6.pdf").toURI).toPath)
 
+        val in                      = Files.newInputStream(new File("/Users/luizfr/Development/ideaprojects/PoolpartyConnector/src/test/resources/Health-Benefit-Plans.pdf").toPath)
         val RecommendationService   = new RelevantConceptsRecommendationServicePoolPartyImpl(system, loadedConnectorSettings, new ThesaurusSparqlConsumerJenaImpl())
 
 
@@ -133,7 +134,7 @@ class RecommendRevelevantConceptsFeatureSpec extends FeatureSpec with Matchers w
             extractedfield.maxConceptsExtraction should be >= conceptlist.withFilter(e => e.conceptSchemes.exists(x => x.uri == extractedfield.scheme)).flatMap(e=>List(e)).size
         }
 
-      conceptlist foreach{ e => println(e); println("----------------")}
+      conceptlist foreach{ e => println(e.language + "" + e.prefLabel + "" + e.id); println("----------------")}
 
     }
 
