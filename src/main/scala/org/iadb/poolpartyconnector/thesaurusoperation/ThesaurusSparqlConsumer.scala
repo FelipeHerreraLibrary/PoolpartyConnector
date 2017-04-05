@@ -34,6 +34,31 @@ trait ThesaurusSparqlConsumer extends RDFModule with RDFOpsModule with SparqlOps
   import sparqlHttp.sparqlEngineSyntax._
 
 
+
+    def getCodeFromSchemaAndLabel(EndpointUri: String, schemaUri: String, label: String ): String = {
+
+       val endpoint = new URL(EndpointUri)
+
+       val query    = parseSelect(s"""
+                               PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+                                  SELECT DISTINCT ?conceptURI {
+                                     ?conceptURI skos:prefLabel ?label.
+                                     ?conceptURI skos:inScheme <$schemaUri>.
+                                     FILTER regex(?label, "$label", "i")
+                                  }
+                            """).get
+
+       val solutions: Try[Rdf#Solutions] = endpoint.executeSelect(query)
+
+       val conceptURI = solutions.map { solution => {solution.iterator() map {row => row("conceptURI").get.as[Rdf#URI].get}}.toList}.get
+
+       if(conceptURI.isEmpty){
+          ""
+       }else{
+          conceptURI.head.toString
+       }
+    }
+
     def getIdentifier(EndpointUri: String, startDate: String , endDate: String,  start: Integer, pagesize: Integer ): List[String] = {
 
        val endpoint = new URL(EndpointUri)
@@ -73,8 +98,8 @@ trait ThesaurusSparqlConsumer extends RDFModule with RDFOpsModule with SparqlOps
                                                   FILTER regex(?label, "$label", "i")
                                            } UNION {
                                                ?conceptURI skos:altLabel ?label.
-                                              ?conceptURI skos:inScheme <$schema>.
-                                                   FILTER regex(?label, "$label", "i")
+                                               ?conceptURI skos:inScheme <$schema>.
+                                               FILTER regex(?label, "$label", "i")
                                      }
                                }
                                OFFSET $start
@@ -408,7 +433,6 @@ trait ThesaurusSparqlConsumer extends RDFModule with RDFOpsModule with SparqlOps
     languageLiteralTry getOrElse List.empty
 
   }
-
 
   def getConceptAllLangPrefLabels(endpointUri: String, conceptUri: String): List[LanguageLiteral] = {
 

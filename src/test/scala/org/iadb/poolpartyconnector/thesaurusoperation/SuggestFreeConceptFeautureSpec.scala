@@ -44,14 +44,20 @@ class SuggestFreeConceptFeautureSpec extends FeatureSpec with ThesaurusConsumerS
 
       Given("A new PrefLabel in english and a targeted scheme")
 
-        val suggestedPrefLabels = List(LanguageLiteral("DanyDan Okouya", "en"))
+        val suggestedPrefLabels = List(LanguageLiteral("Test", "en"))
         val lang = "en"
         val scheme = "http://thesaurus.iadb.org/publicthesauri/IdBAuthors"
         val service = cache
 
       When("")
 
-        val suggestedCocneptUris = service.createSuggestedFreeConcepts(suggestedPrefLabels, scheme, false)
+      val suggestedCocneptUris = service.createSuggestedFreeConcepts(suggestedPrefLabels, scheme, false)
+
+      val suggestedPrefLabelsTopic = List(LanguageLiteral("Test Topic", "en"))
+      val langTopic = "en"
+      val schemeTopic = "http://thesaurus.iadb.org/publicthesauri/IdBTopics"
+
+      val suggestedCocneptUrisTopic = service.createSuggestedFreeConcepts(suggestedPrefLabelsTopic, schemeTopic, false)
 
 
       Then("")

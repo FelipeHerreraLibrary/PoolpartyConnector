@@ -46,6 +46,8 @@ trait ThesaurusCacheService {
 
   def getAllLangPrefLabels(conceptUri: String): List[LanguageLiteral]
 
+  def getAllLangJelCodesPrefLabels(conceptUri: String): List[LanguageLiteral]
+
   def getIndexableLabels(conceptUri: String): List[LanguageLiteral]
 
   def getBroaderLabels(conceptUri: String): List[LanguageLiteral]
@@ -74,6 +76,8 @@ trait ThesaurusCacheService {
 
   def getIdentifier(startDate: String, endDate: String, start: Integer, pagesize: Integer): List[String]
 
+  def getCodeFromSchemaAndLabel(schemaUri: String, label: String ): String
+
 }
 
 /**
@@ -98,15 +102,19 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem,
 
   //TODO: Move it to the configuration file
   private val sparqlEndpoint          = connectorSettings.poolpartyServerSettings.sparqlEndpoint
+  private val sparqlJelCodesEndoints  = connectorSettings.poolpartyServerSettings.apirootEndpoint + "/PoolParty/sparql/jelcodes"
 
 
+  def getCodeFromSchemaAndLabel(schemaUri: String, label: String): String = {
+
+    thesaurusSparqlConsumer.getCodeFromSchemaAndLabel(sparqlEndpoint, schemaUri, label)
+  }
 
   def getIdentifier(startDate: String , endDate: String,  start: Integer, pagesize: Integer ): List [String] = {
 
      thesaurusSparqlConsumer.getIdentifier(sparqlEndpoint, startDate, endDate, start, pagesize)
 
   }
-
 
   def getShemaFromUri(ConceptUri: String): String = {
 
@@ -590,6 +598,12 @@ case class ThesaurusCacheServicePoolPartyImpl(actorSystem: ActorSystem,
   def getAllLangPrefLabels(conceptUri: String): List[LanguageLiteral] = {
 
     thesaurusSparqlConsumer.getConceptAllLangPrefLabels(sparqlEndpoint, conceptUri)
+
+  }
+
+  def getAllLangJelCodesPrefLabels(conceptUri: String): List[LanguageLiteral] = {
+
+    thesaurusSparqlConsumer.getConceptAllLangPrefLabels(sparqlJelCodesEndoints, conceptUri)
 
   }
 

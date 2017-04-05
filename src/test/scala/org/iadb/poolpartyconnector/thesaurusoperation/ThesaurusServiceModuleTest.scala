@@ -14,7 +14,7 @@ trait ThesaurusServiceModuleTest {
 
   import com.softwaremill.macwire._
 
-  val loadedConnectorSettings : DspacePoolPartyConnectorSettings = DspaceDspacePoolPartyConnectorSettingImpl("file:///Users/maatary/Dev/IdeaProjects/PoolpartyConnector/src/test/resources/poolpartydspace.conf")
+  val loadedConnectorSettings : DspacePoolPartyConnectorSettings = DspaceDspacePoolPartyConnectorSettingImpl("file:////Users/luizfr/Development/ideaprojects/PoolpartyConnector/src/test/resources/poolpartydspace.conf")
 
   def system                                                     = ActorSystem()
   lazy val cache             : Cache[String]                     = new ExpiringLruCache[String](2000, 2000, Duration.Inf , Duration.Inf)

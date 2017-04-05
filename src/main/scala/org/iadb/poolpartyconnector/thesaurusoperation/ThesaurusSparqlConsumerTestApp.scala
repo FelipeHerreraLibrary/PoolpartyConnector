@@ -1,5 +1,8 @@
 package org.iadb.poolpartyconnector.thesaurusoperation
 
+import com.softwaremill.macwire._
+import org.iadb.poolpartyconnector.thesaurusoperation.JsonProtocolSpecification.LanguageLiteral
+
 /**
   * Created by Daniel Maatari Okouya on 7/28/16.
   */
@@ -16,8 +19,6 @@ object ThesaurusSparqlConsumerTestApp extends App {
                                                        ) foreach  {
     println(_)
 
-
-
   println(ThesaurusSparqlConsumerJenaImpl().isBroaderConcept("http://localhost:8086/PoolParty/sparql/publicthesauri",
     "http://localhost:8086/publicthesauri/5359760942722238",
     "http://localhost:8086/publicthesauri/208"))
@@ -30,7 +31,6 @@ object ThesaurusSparqlConsumerTestApp extends App {
 
   println(ThesaurusSparqlConsumerJenaImpl().getAllNarrowerIds("http://localhost:8086/PoolParty/sparql/publicthesauri",
     "http://thesaurus.iadb.org/publicthesauri/132913920474444178771096") )
-
 
   println(ThesaurusSparqlConsumerJenaImpl().getLastModifiedDate("http://localhost:8086/PoolParty/sparql/publicthesauri",
     "http://thesaurus.iadb.org/publicthesauri/45466564926317124") )
@@ -58,7 +58,6 @@ object ThesaurusSparqlConsumerTestApp extends App {
 
   println(ThesaurusSparqlConsumerJenaImpl().getShemaFromCode("http://localhost:8086/PoolParty/sparql/publicthesauri", "GE-G"));
 
-
   println(ThesaurusSparqlConsumerJenaImpl().getMatchesConceptInSchema("http://localhost:8086/PoolParty/sparql/publicthesauri", "know", "http://thesaurus.iadb.org/publicthesauri/IdBTopics", 0, 5))
 
   println(ThesaurusSparqlConsumerJenaImpl().getMatchesConceptInSchema("http://localhost:8086/PoolParty/sparql/publicthesauri", "know", "http://thesaurus.iadb.org/publicthesauri/IdBDepartments",0,5))
@@ -67,8 +66,14 @@ object ThesaurusSparqlConsumerTestApp extends App {
 
   println(ThesaurusSparqlConsumerJenaImpl().getMatchesConceptInSchema("http://localhost:8086/PoolParty/sparql/publicthesauri", "know", "http://thesaurus.iadb.org/publicthesauri/IdBDepartments",2,5))
 
-  */
-  
   println(ThesaurusSparqlConsumerJenaImpl().getIdentifier("http://localhost:8086/PoolParty/sparql/publicthesauri", "2010-01-01", "2016-12-31", 0, 10))
+
+  println(ThesaurusSparqlConsumerJenaImpl().getConceptAllLangPrefLabels("http://localhost:8086/PoolParty/sparql/publicthesauri","http://thesaurus.iadb.org/publicthesauri/110246602490720414534842"))
+
+  println(ThesaurusSparqlConsumerJenaImpl().getCodeFromSchemaAndLabel("http://localhost:8086/PoolParty/sparql/publicthesauri", "http://thesaurus.iadb.org/publicthesauri/IdBDepartments", "Knowledge and Learning Sector"))
+
+   */
+  println(ThesaurusSparqlConsumerJenaImpl().getConceptAllLangPrefLabels("http://localhost:8086/PoolParty/sparql/jelcodes","http://thesaurus.iadb.org/jelcodes/99991877239509257"))
+
 
 }
